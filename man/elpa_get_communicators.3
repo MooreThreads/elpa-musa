@@ -1,0 +1,70 @@
+.TH "elpa_get_communicators" 3 "Wed Mar 13 2024" "ELPA" \" -*- nroff -*-
+.ad l
+.nh
+.ss 12 0
+.SH NAME
+elpa_get_communicators \- splits the global MPI communicator mpi_comm_global communicator into rows and column communicators mpi_comm_rows and mpi_comm_cols
+.br
+
+.SH SYNOPSIS
+.br
+.SS FORTRAN INTERFACE
+use elpa1
+
+.br
+status =\fB elpa_get_communicators\fP (mpi_comm_global, my_prow, my_pcol, mpi_comm_rows, mpi_comm_cols)
+
+.TP
+integer, intent(in)   ::\fB mpi_comm_global\fP  
+Global communicator for the calculation
+.TP
+integer, intent(in)   ::\fB my_prow\fP          
+Row coordinate of the calling process in the process grid
+.TP
+integer, intent(in)   ::\fB my_pcol\fP          
+Column coordinate of the calling process in the process grid
+.TP
+integer, intent(out)  ::\fB mpi_comm_rows\fP    
+Communicator for communication within rows of processes
+.TP
+integer, intent(out)  ::\fB mpi_comm_cols\fP    
+Communicator for communication within columns of processes
+.TP
+integer               ::\fB status\fP
+Return value indicating success or failure of the underlying MPI_COMM_SPLIT function
+
+.SS C/C++ INTERFACE
+#include "elpa_generated.h
+
+.br
+status =\fB elpa_get_communicators\fP (int mpi_comm_world, int my_prow, int my_pcol, int *mpi_comm_rows, int *mpi_comm_cols);
+
+.TP
+int \fB mpi_comm_global\fP;   
+Global communicator for the calculation
+.TP
+int \fB my_prow\fP;           
+Row coordinate of the calling process in the process grid
+.TP
+int \fB my_pcol\fP;           
+Column coordinate of the calling process in the process grid
+.TP
+int \fB *mpi_comm_rows\fP;    
+Pointer to the communicator for communication within rows of processes
+.TP
+int \fB *mpi_comm_cols\fP;    
+Pointer to the communicator for communication within columns of processes
+.TP
+int  \fB status\fP;
+Return value indicating success or failure of the underlying MPI_COMM_SPLIT function
+
+
+
+.SH DESCRIPTION
+All ELPA routines need MPI communicators for communicating within rows or columns of processes.
+These communicators are created from the\fB mpi_comm_global\fP communicator.
+It is assumed that the matrix used in ELPA is distributed with\fB my_prow\fP rows and\fB my_pcol\fP columns on the calling process.
+This function has to be invoked by all involved processes before any other calls to ELPA routines.
+
+.SH SEE ALSO
+\fBelpa_get_communicators\fP(3)\fB elpa_solve_evp_real\fP(3)\fB elpa_solve_evp_complex\fP(3)\fB elpa2_print_kernels\fP(1)

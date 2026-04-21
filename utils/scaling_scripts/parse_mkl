@@ -1,0 +1,15 @@
+#! /bin/bash
+echo nodes total file
+for f in *.txt 
+do
+    #echo "processing $f... "
+    S=`grep " node = " $f | awk '{print $5}'`
+    
+    TOTAL=`grep "e%eigenvectors()" $f | awk '{print $3}'`
+    if [[ -z "$TOTAL" ]]; then
+        continue
+    fi
+    S+=" "$TOTAL 
+    S+=" "`echo $f`
+    echo $S
+done

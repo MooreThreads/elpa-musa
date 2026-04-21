@@ -1,0 +1,85 @@
+Libtool interface number history (the "c" in [c:r:a] of
+https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html).
+
+- 0
+  Legacy interface number for all releases prior to 2014.06
+
+- 1
+  Incompatible API change. Most subroutines were converted into functions
+  returning a success flag. Previously, the library called exit() on error
+  conditions.
+
+  The state of release 2014.06.001 defines this interface
+
+- 2
+  Incompatible API change. The routine for ELPA 2 real case takes an
+  optional argument, defining whether QR decomposition is used or not
+
+  The state of release 2015.02.001 defines this interface
+
+- 3
+  Incompatible API change. C Functions are added to provide an C interface.
+  The subroutine "get_elpa_row_col_comms" has been converted to a function
+  which returns an error code.
+
+  The state of release 2015.02.002 defines this interface
+
+- 4
+  Incompatible API change. The Fortran versions of the library functions return
+  a logical indicating success or failure. The C versions of the library functions
+  return an integer {0,1} for success and failure.
+  Some interface need an extra argument, specifying the number of matrix columns
+  (see the documentation)
+
+  The state of release 2015.11.001 defines this interface
+
+- 5
+  Compatible API change w.r.t. previous version: Interfaces have been added to unify
+  the naming conventions. The old interface are still available
+
+  The states of release 2016.05.001 and 2016.05.002 define this interface
+
+- 6
+  Compatible API change w.r.t. previous version: Interfaces have been made public.
+
+  The state of release 2016.05.003 defines this interface
+
+- 7
+  Compatible API change w.r.t. previous version: Interfaces for generic driver
+  routines have been added. The old interfaces are still available
+
+  The state of release 2016.05.004 defines this interface
+
+- 8
+  INCOMPATIBLE API change w.r.t. previous version: Interfaces for single precision
+  routines have been added. Additional parameters allow run-time choice of GPU
+  version.
+
+  This is an experimental API, which will most likely change in the future
+
+  The state of release 2016.11.001.pre defines this interface
+
+- 9
+  NO incompatible API changes w.r.t. the previous version. The interface of
+  the previous version 2016.11.001.pre has been marked as "legacy", although it
+  is fully available and supported.
+
+  However, a new, more general API has been published, which will in the long run
+  completely replace the "legacy" interface.
+
+  The state of release 2017.05.001 defines this interface
+
+- 10
+  NO incompatible API changes w.r.t. the previous version. Only some functions have
+  been added. The state of release 2017.05.001 defines this interface
+
+- 11
+  Incompatible API changes w.r.t. the previous version (only in the so called
+  "legacy interface", since as announced some deprecated function aliases have been
+  removed). For the current interface all changes since 2017.05.001 are
+  compatible, since only some functions have been added. 
+  The state of release 2017.11.001 defines this interface
+
+- 12
+  No incompatible API changes w.r.t. the previous version. Some functions have been
+  added

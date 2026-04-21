@@ -1,0 +1,22 @@
+This file contains the release notes for the ELPA 2021.05.002 version
+
+What is new?
+-------------
+For detailed information about changes since release ELPA 2020.11.001 please have a look at the Changelog file
+
+- smaller bugfixes
+- fix the SO version which in release 2021.05.001 is wrong
+
+
+
+ABI change
+---------------------
+
+Since release 2019.11.001 the ABI has not changed.
+
+Any incompatibilities to previous version?
+---------------------------------------
+
+yes, if the previous builds had the legacy interface activated
+
+
