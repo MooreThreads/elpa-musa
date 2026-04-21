@@ -56,7 +56,7 @@ module tridiag_gpu
 
   public
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
 
   interface
     subroutine gpu_copy_and_set_zeros_c(dataType, v_row_dev, u_col_dev, a_dev, aux1_dev, vav_dev, d_vec_dev, &
@@ -65,6 +65,8 @@ module tridiag_gpu
                                         isSkewsymmetric_int, useCCL_int, wantDebug_int, SM_count, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_copy_and_set_zeros_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_copy_and_set_zeros_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name="hip_copy_and_set_zeros_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -86,6 +88,8 @@ module tridiag_gpu
     subroutine gpu_dot_product_c(dataType, n, x_dev, incx, y_dev, incy, result_dev, wantDebug_int, sm_count, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_dot_product_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_dot_product_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name="hip_dot_product_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -107,6 +111,8 @@ module tridiag_gpu
                                             wantDebug_int, SM_count, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_dot_product_and_assign_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_dot_product_and_assign_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name="hip_dot_product_and_assign_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -129,6 +135,8 @@ module tridiag_gpu
                                                           wantDebug_int, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                       bind(C, name="cuda_set_e_vec_scale_set_one_store_v_row_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_set_e_vec_scale_set_one_store_v_row_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                       bind(C, name="hip_set_e_vec_scale_set_one_store_v_row_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -153,6 +161,8 @@ module tridiag_gpu
                                         useCCL_int, wantDebug_int, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                         bind(C, name="cuda_store_u_v_in_uv_vu_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_store_u_v_in_uv_vu_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                         bind(C, name="hip_store_u_v_in_uv_vu_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -177,6 +187,8 @@ module tridiag_gpu
                                                 isSkewsymmetric_int, wantDebug_int, SM_count, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                               bind(C, name="cuda_update_matrix_element_add_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_update_matrix_element_add_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                               bind(C, name="hip_update_matrix_element_add_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -198,6 +210,8 @@ module tridiag_gpu
     subroutine gpu_hh_transform_c(dataType, alpha_dev, xnorm_sq_dev, xf_dev, tau_dev, wantDebug_int, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                   bind(C, name="cuda_hh_transform_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_hh_transform_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                   bind(C, name="hip_hh_transform_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -220,6 +234,8 @@ module tridiag_gpu
                                                   isSkewsymmetric_int, isReduceadd_int, wantDebug_int, sm_count, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_transpose_reduceadd_vectors_copy_block_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_transpose_reduceadd_vectors_copy_block_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name="hip_transpose_reduceadd_vectors_copy_block_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -270,7 +286,7 @@ module tridiag_gpu
       if (useCCL) useCCL_int = 1
       if (wantDebug) wantDebug_int = 1
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_copy_and_set_zeros_c(dataType, v_row_dev, u_col_dev, a_dev, aux1_dev, vav_dev, d_vec_dev, &
                                     l_rows, l_cols, matrixRows, istep, &
                                     isOurProcessRow_int, isOurProcessCol_int, isOurProcessCol_prev_int, &
@@ -292,7 +308,7 @@ module tridiag_gpu
       wantDebug_int = 0
       if (wantDebug) wantDebug_int = 1
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_dot_product_c(dataType, n, x_dev, incx, y_dev, incy, result_dev, wantDebug_int, sm_count, my_stream)
 #endif
     end subroutine
@@ -313,7 +329,7 @@ module tridiag_gpu
       if (isOurProcessRow) isOurProcessRow_int = 1
       if (wantDebug) wantDebug_int = 1
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_dot_product_and_assign_c(dataType, v_row_dev, l_rows, isOurProcessRow_int, aux1_dev, &
                                         wantDebug_int, SM_count, my_stream)
 #endif
@@ -339,7 +355,7 @@ module tridiag_gpu
       if (useCCL) useCCL_int = 1
       if (wantDebug) wantDebug_int = 1
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_set_e_vec_scale_set_one_store_v_row_c (dataType, e_vec_dev, vrl_dev, a_dev, v_row_dev, tau_dev, xf_host_or_dev, &
                                                       l_rows, l_cols, matrixRows, istep, &
                                                       isOurProcessRow_int, useCCL_int, wantDebug_int, my_stream)
@@ -368,7 +384,7 @@ module tridiag_gpu
       if (useCCL) useCCL_int = 1
       if (wantDebug) wantDebug_int = 1
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_store_u_v_in_uv_vu_c(dataType, vu_stored_rows_dev, uv_stored_cols_dev, v_row_dev, u_row_dev, &
                                     v_col_dev, u_col_dev, tau_dev, aux_complex_dev, &
                                     vav_host_or_dev, tau_istep_host_or_dev, &
@@ -396,7 +412,7 @@ module tridiag_gpu
       if (isSkewsymmetric) isSkewsymmetric_int = 1
       if (wantDebug) wantDebug_int = 1
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_update_matrix_element_add_c (dataType, vu_stored_rows_dev, uv_stored_cols_dev, a_dev, d_vec_dev,  &
                                             l_rows, l_cols, matrixRows, max_local_rows, max_local_cols, istep, n_stored_vecs, &
                                             isSkewsymmetric_int, wantDebug_int, SM_count, my_stream)
@@ -416,7 +432,7 @@ module tridiag_gpu
       wantDebug_int = 0
       if (wantDebug) wantDebug_int = 1
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_hh_transform_c(dataType, alpha_dev, xnorm_sq_dev, xf_dev, tau_dev, wantDebug_int, my_stream)
 #endif
     end subroutine
@@ -443,7 +459,7 @@ module tridiag_gpu
       if (isReduceadd) isReduceadd_int = 1
       if (wantDebug) wantDebug_int = 1
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_transpose_reduceadd_vectors_copy_block_c(dataType, aux_transpose_dev, vmat_st_dev, &
                                           nvc, nvr, n_block, nblks_skip, nblks_tot, &
                                           lcm_s_t, nblk, auxstride, np_st, ld_st, direction, &

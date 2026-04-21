@@ -75,7 +75,7 @@
 #ifdef WITH_GPU_STREAMS
   use elpa_gpu_util
 #endif
-#if defined(WITH_NVIDIA_GPU_VERSION) && defined(WITH_NVTX)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) && defined(WITH_NVTX)
   use cuda_functions ! for NVTX labels
 #elif defined(WITH_AMD_GPU_VERSION) && defined(WITH_ROCTX)
   use hip_functions  ! for ROCTX labels
@@ -185,7 +185,7 @@
 
 #if !defined(DEVICE_POINTER)
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
   if (.not.(query_gpu_usage(obj, "ELPA_MULITPLY_AB", useGPU))) then
     print *,"ELPA_MULITPLY_AB: Problem querrying settings for GPU Aborting..."
     stop 1

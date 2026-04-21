@@ -55,12 +55,14 @@ module multiply_a_b_gpu
 
   public
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
 
   interface
     subroutine gpu_copy_tmp2_c_c (dataType, tmp2_dev, c_dev, nr_done, nstor, lcs, lce, ldc, ldcCols, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_copy_tmp2_c_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_copy_tmp2_c_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_copy_tmp2_c_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -81,6 +83,8 @@ module multiply_a_b_gpu
                                         noff, nblk, lda, n_size, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_copy_a_aux_bc_loop_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_copy_a_aux_bc_loop_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_copy_a_aux_bc_loop_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -101,6 +105,8 @@ module multiply_a_b_gpu
                                               nstor0, l_rows, n_size, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_copy_aux_bc_aux_mat_loop_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_copy_aux_bc_aux_mat_loop_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_copy_aux_bc_aux_mat_loop_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -129,7 +135,7 @@ module multiply_a_b_gpu
       integer(kind=c_intptr_t), value    :: tmp2_dev, c_dev
       integer(kind=c_int), value         :: nr_done, nstor, lcs, lce, ldc, ldcCols, debug
       integer(kind=c_intptr_t), value    :: my_stream
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_copy_tmp2_c_c(dataType, tmp2_dev, c_dev, nr_done, nstor, lcs, lce, ldc, ldcCols, debug, my_stream)
 #endif
     end subroutine
@@ -143,7 +149,7 @@ module multiply_a_b_gpu
       integer(kind=c_intptr_t), value    :: a_dev, aux_bc_dev, lrs_save_dev, lre_save_dev, n_aux_bc_save_dev
       integer(kind=c_int), value         :: noff, nblk, lda, n_size, debug
       integer(kind=c_intptr_t), value    :: my_stream
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_copy_a_aux_bc_loop_c(dataType, a_dev, aux_bc_dev, lrs_save_dev, lre_save_dev, n_aux_bc_save_dev, &
                                     noff, nblk, lda, n_size, debug, my_stream)
 #endif
@@ -158,7 +164,7 @@ module multiply_a_b_gpu
       integer(kind=c_intptr_t), value    :: aux_bc_dev, aux_mat_dev, lrs_save_dev, lre_save_dev, n_aux_bc_save_dev
       integer(kind=c_int), value         :: nstor0, l_rows, n_size, debug
       integer(kind=c_intptr_t), value    :: my_stream
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_copy_aux_bc_aux_mat_loop_c(dataType, aux_bc_dev, aux_mat_dev, lrs_save_dev, lre_save_dev, n_aux_bc_save_dev, &
                                           nstor0, l_rows, n_size, debug, my_stream)
 #endif

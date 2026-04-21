@@ -55,12 +55,14 @@ module solve_tridi_col_gpu
 
   public
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
 
   interface
     subroutine gpu_update_d_c(dataType, d_dev, e_dev, limits_dev, ndiv, na, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_update_d_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_update_d_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_update_d_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -81,6 +83,8 @@ module solve_tridi_col_gpu
     subroutine gpu_copy_qmat1_to_qmat2_c(dataType, qmat1_dev, qmat2_dev, max_size, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_copy_qmat1_to_qmat2_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_copy_qmat1_to_qmat2_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_copy_qmat1_to_qmat2_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -110,7 +114,7 @@ module solve_tridi_col_gpu
       integer(kind=c_intptr_t), value    :: limits_dev
       integer(kind=c_int), value         :: ndiv, na, debug
       integer(kind=c_intptr_t), value    :: my_stream
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_update_d_c(dataType, d_dev, e_dev, limits_dev, ndiv, na, debug, my_stream)
 #endif
     end subroutine
@@ -123,7 +127,7 @@ module solve_tridi_col_gpu
       integer(kind=c_intptr_t), value    :: qmat1_dev, qmat2_dev
       integer(kind=c_int), value         :: max_size, debug
       integer(kind=c_intptr_t), value    :: my_stream
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_copy_qmat1_to_qmat2_c(dataType, qmat1_dev, qmat2_dev, max_size, debug, my_stream)
 #endif
     end subroutine

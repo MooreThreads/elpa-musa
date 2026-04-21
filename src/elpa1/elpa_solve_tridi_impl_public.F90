@@ -152,7 +152,7 @@
   success = .false.
 
   useGPU     = .false.
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
   ! query keywords gpu, nvidia-gpu, amd-gpu and check for consisteny between actual and legacy GPU setings
   if (.not.(query_gpu_usage(obj, "solve_tridi_impl", useGPU))) then
     write(error_unit,*) "solve_tridi_impl: Problem getting options for GPU. Aborting..."

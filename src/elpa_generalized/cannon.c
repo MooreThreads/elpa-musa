@@ -95,9 +95,12 @@
 #define NVTX_RANGE_POP() ((void)0)
 #endif
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) && !defined(WITH_MUSA_GPU_VERSION)
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
+#endif
+#ifdef WITH_MUSA_GPU_VERSION
+#include <musa_runtime.h>
 #endif
 
 int gpuMemcpyHostToDevice;

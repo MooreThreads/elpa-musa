@@ -53,6 +53,10 @@ module cusolver_functions
 
   public
 
+#ifdef WITH_MUSA_GPU_VERSION
+#include "../MUSA/musolver_template.F90"
+#else
 #include "./cusolver_template.F90"
+#endif
 
 end module cusolver_functions

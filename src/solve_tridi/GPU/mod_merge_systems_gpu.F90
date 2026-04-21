@@ -55,13 +55,15 @@ module merge_systems_gpu
 
   public
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
 
   interface
     subroutine gpu_compute_nnzl_nnzu_val_part1_c (p_col_dev, idx1_dev, coltyp_dev, nnzu_val_dev, nnzl_val_dev, &
                                                   na, na1, np_rem, npc_n, nnzu_start, nnzl_start, np, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_compute_nnzl_nnzu_val_part1_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_compute_nnzl_nnzu_val_part1_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_compute_nnzl_nnzu_val_part1_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -81,6 +83,8 @@ module merge_systems_gpu
                                                   na, na1, nnzu_start, nnzl_start, npc_n, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_compute_nnzl_nnzu_val_part2_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_compute_nnzl_nnzu_val_part2_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_compute_nnzl_nnzu_val_part2_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -102,6 +106,8 @@ module merge_systems_gpu
                                             debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_copy_qtmp1_slice_to_q_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_copy_qtmp1_slice_to_q_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_copy_qtmp1_slice_to_q_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -124,6 +130,8 @@ module merge_systems_gpu
                                             ns, ncnt, indx, indx2, na, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_copy_q_slice_to_qtmp2_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_copy_q_slice_to_qtmp2_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_copy_q_slice_to_qtmp2_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -146,6 +154,8 @@ module merge_systems_gpu
                                             l_rqs, l_rqe, l_rows, ncnt, gemm_dim_k, matrixRows, ns, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_copy_qtmp2_slice_to_q_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_copy_qtmp2_slice_to_q_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_copy_qtmp2_slice_to_q_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -167,6 +177,8 @@ module merge_systems_gpu
                               na, gemm_dim_l, gemm_dim_m, nnzu, ns, ncnt, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_fill_ev_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_fill_ev_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_fill_ev_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -189,6 +201,8 @@ module merge_systems_gpu
                                       na, np, na1, np_rem, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_fill_tmp_arrays_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_fill_tmp_arrays_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_fill_tmp_arrays_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -210,6 +224,8 @@ module merge_systems_gpu
                             na, my_pcol, l_rqs, l_rqe, matrixRows, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_zero_q_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_zero_q_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_zero_q_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -232,6 +248,8 @@ module merge_systems_gpu
                                             matrixRows, gemm_dim_k, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_copy_q_slice_to_qtmp1_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_copy_q_slice_to_qtmp1_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_copy_q_slice_to_qtmp1_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -252,6 +270,8 @@ module merge_systems_gpu
     subroutine gpu_copy_qtmp1_to_qtmp1_tmp_c (dataType, qtmp1_dev, qtmp1_tmp_dev, gemm_dim_k, gemm_dim_l, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_copy_qtmp1_to_qtmp1_tmp_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_copy_qtmp1_to_qtmp1_tmp_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_copy_qtmp1_to_qtmp1_tmp_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -271,6 +291,8 @@ module merge_systems_gpu
     subroutine gpu_fill_array_c (dataType, array_dev, value_dev, n, SM_count, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_fill_array_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_fill_array_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_fill_array_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -291,6 +313,8 @@ module merge_systems_gpu
                                             z_dev, dbase_dev, ddiff_dev, my_proc, na1, n_procs, SM_count, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                     bind(C, name="cuda_solve_secular_equation_loop_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_solve_secular_equation_loop_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                     bind(C, name= "hip_solve_secular_equation_loop_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -310,6 +334,8 @@ module merge_systems_gpu
     subroutine gpu_local_product_c (dataType, z_dev, z_extended_dev, na1, SM_count, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                     bind(C, name="cuda_local_product_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_local_product_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                     bind(C, name= "hip_local_product_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -330,6 +356,8 @@ module merge_systems_gpu
                                  na1, my_proc, n_procs, SM_count, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                     bind(C, name="cuda_add_tmp_loop_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_add_tmp_loop_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                     bind(C, name= "hip_add_tmp_loop_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -351,6 +379,8 @@ module merge_systems_gpu
                                                   SM_count, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_copy_qtmp1_q_compute_nnzu_nnzl_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_copy_qtmp1_q_compute_nnzu_nnzl_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_copy_qtmp1_q_compute_nnzu_nnzl_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -371,6 +401,8 @@ module merge_systems_gpu
                           sig_int, na, my_pcol, row_q, ldq, SM_count, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_fill_z_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_fill_z_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_fill_z_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -399,7 +431,7 @@ module merge_systems_gpu
       integer(kind=c_int), value         :: na, na1, np_rem, npc_n, nnzu_start, nnzl_start, np, debug
       integer(kind=c_intptr_t), value    :: my_stream
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_compute_nnzl_nnzu_val_part1_c (p_col_dev, idx1_dev, coltyp_dev, nnzu_val_dev, nnzl_val_dev, &
                                               na, na1, np_rem, npc_n, nnzu_start, nnzl_start, np, debug, my_stream)
 #endif
@@ -414,7 +446,7 @@ module merge_systems_gpu
       integer(kind=c_int), value         :: na, na1, nnzu_start, nnzl_start, npc_n, debug
       integer(kind=c_intptr_t), value    :: my_stream
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_compute_nnzl_nnzu_val_part2_c (nnzu_val_dev, nnzl_val_dev, &
                                               na, na1, nnzu_start, nnzl_start, npc_n, debug, my_stream)
 #endif
@@ -433,7 +465,7 @@ module merge_systems_gpu
       integer(kind=c_int), value         :: ndef, l_rqs, l_rqe, l_rows, matrixRows, gemm_dim_k, my_pcol, na1, np_rem, na, debug
       integer(kind=c_intptr_t), value    :: my_stream
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_copy_qtmp1_slice_to_q_c (dataType, q_dev, qtmp1_dev, &
                                         l_col_out_dev, p_col_out_dev, p_col_dev, idx2_dev, idx_dev, &
                                         ndef, l_rqs, l_rqe, l_rows, matrixRows, gemm_dim_k,  my_pcol, na1, np_rem, na, debug, &
@@ -454,7 +486,7 @@ module merge_systems_gpu
                                             ns, ncnt, indx, indx2, na, debug
       integer(kind=c_intptr_t), value    :: my_stream
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_copy_q_slice_to_qtmp2_c (dataType, q_dev, qtmp2_dev, idxq1_dev, l_col_out_dev, &
                                         l_rows, l_rqs, l_rqe, matrixRows, matrixCols, gemm_dim_k,  gemm_dim_m, &
                                         ns, ncnt, indx, indx2, na, debug, my_stream)
@@ -472,7 +504,7 @@ module merge_systems_gpu
       integer(kind=c_int), value         :: l_rqs, l_rqe, l_rows, ncnt, gemm_dim_k, matrixRows, ns, debug
       integer(kind=c_intptr_t), value    :: my_stream
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_copy_qtmp2_slice_to_q_c (dataType, q_dev, qtmp2_dev, idxq1_dev, l_col_out_dev, &
                                         l_rqs, l_rqe, l_rows, ncnt, gemm_dim_k, matrixRows, ns, debug, my_stream)
 #endif    
@@ -489,7 +521,7 @@ module merge_systems_gpu
       integer(kind=c_int), value         :: na, gemm_dim_l, gemm_dim_m, nnzu, ns, ncnt, debug
       integer(kind=c_intptr_t), value    :: my_stream
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_fill_ev_c (dataType, ev_dev, d1u_dev, dbase_dev, ddiff_dev, zu_dev, ev_scale_dev, idxq1_dev, idx_dev, &
                           na, gemm_dim_l, gemm_dim_m, nnzu, ns, ncnt, debug, my_stream)
 #endif
@@ -507,7 +539,7 @@ module merge_systems_gpu
       integer(kind=c_int), value         :: na, np, na1, np_rem, debug
       integer(kind=c_intptr_t), value    :: my_stream
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_fill_tmp_arrays_c (dataType, d1u_dev, d1_dev, zu_dev, z_dev, d1l_dev, zl_dev, &
                                   idx1_dev, p_col_dev, coltyp_dev, nnzu_val_dev, nnzl_val_dev, nnzul_dev, &
                                   na, np, na1, np_rem, debug, my_stream)
@@ -525,7 +557,7 @@ module merge_systems_gpu
       integer(kind=c_int), value         :: na, my_pcol, l_rqs, l_rqe, matrixRows, debug
       integer(kind=c_intptr_t), value    :: my_stream
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_zero_q_c(dataType, q_dev, p_col_out_dev, l_col_out_dev, &
                         na, my_pcol, l_rqs, l_rqe, matrixRows, debug, my_stream)
 #endif
@@ -543,7 +575,7 @@ module merge_systems_gpu
       integer(kind=c_int), value         :: ndef, na2, my_pcol, l_rows, l_rqs, l_rqe, matrixRows, gemm_dim_k, debug
       integer(kind=c_intptr_t), value    :: my_stream
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_copy_q_slice_to_qtmp1_c (dataType, qtmp1_dev, q_dev, l_col_dev, idx2_dev, p_col_dev, &
                                         ndef, na2, my_pcol, l_rows, l_rqs, l_rqe, &
                                         matrixRows, gemm_dim_k, debug, my_stream)
@@ -559,7 +591,7 @@ module merge_systems_gpu
       integer(kind=c_int), value         :: gemm_dim_k, gemm_dim_l, debug
       integer(kind=c_intptr_t), value    :: my_stream
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_copy_qtmp1_to_qtmp1_tmp_c (dataType, qtmp1_dev, qtmp1_tmp_dev, gemm_dim_k, gemm_dim_l, debug, my_stream)
 #endif
     end subroutine
@@ -573,7 +605,7 @@ module merge_systems_gpu
       integer(kind=c_int), value         :: n, SM_count, debug
       integer(kind=c_intptr_t), value    :: my_stream
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_fill_array_c (dataType, array_dev, value_dev, n, SM_count, debug, my_stream)
 #endif
     end subroutine
@@ -588,7 +620,7 @@ module merge_systems_gpu
       integer(kind=c_int), value         :: my_proc, na1, n_procs, SM_count, debug
       integer(kind=c_intptr_t), value    :: my_stream
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_solve_secular_equation_loop_c (dataType, d1_dev, z1_dev, delta_dev, rho_dev, &
                                               z_dev, dbase_dev, ddiff_dev, my_proc, na1, n_procs, SM_count, debug, my_stream)
 #endif
@@ -603,7 +635,7 @@ module merge_systems_gpu
       integer(kind=c_int), value         :: na1, SM_count, debug
       integer(kind=c_intptr_t), value    :: my_stream
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_local_product_c (dataType, z_dev, z_extended_dev, na1, SM_count, debug, my_stream)
 #endif
     end subroutine
@@ -618,7 +650,7 @@ module merge_systems_gpu
       integer(kind=c_int), value         :: na1, my_proc, n_procs, SM_count, debug
       integer(kind=c_intptr_t), value    :: my_stream
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_add_tmp_loop_c (dataType, d1_dev, dbase_dev, ddiff_dev, z_dev, ev_scale_dev, tmp_extended_dev, &
                                na1, my_proc, n_procs, SM_count, debug, my_stream)
 #endif
@@ -636,7 +668,7 @@ module merge_systems_gpu
       integer(kind=c_int), value         :: na1, l_rnm, l_rqs, l_rqm, l_rows, my_pcol, ldq_tmp1, ldq, SM_count, debug
       integer(kind=c_intptr_t), value    :: my_stream
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_copy_qtmp1_q_compute_nnzu_nnzl_c(dataType, qtmp1_dev, q_dev, &
                                                 p_col_dev, l_col_dev, idx1_dev, coltyp_dev, nnzul_dev, &
                                                 na1, l_rnm, l_rqs, l_rqm, l_rows, my_pcol, ldq_tmp1, ldq, &
@@ -654,7 +686,7 @@ module merge_systems_gpu
       integer(kind=c_int), value         :: sig_int, na, my_pcol, row_q, ldq, SM_count, debug
       integer(kind=c_intptr_t), value    :: my_stream
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_fill_z_c(dataType, z_dev, q_dev, p_col_dev, l_col_dev, &
                         sig_int, na, my_pcol, row_q, ldq, SM_count, debug, my_stream)
 #endif

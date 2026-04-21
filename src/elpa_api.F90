@@ -1217,7 +1217,7 @@ module elpa_api
 !      maxThreads=1
 !#endif /* WITH_OPENMP_TRADITIONAL */
 !
-!#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+!#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
 !      if (allocated(gpublasHandleArray)) then   
 !
 !#include "./GPU/handle_destruction_template.F90"
@@ -1225,7 +1225,7 @@ module elpa_api
 !        deallocate(self%gpu_setup%gpublasHandleArray)
 !        deallocate(self%gpu_setup%gpuDeviceArray)
 !      
-!#ifdef WITH_NVIDIA_GPU_VERSION
+!#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
 !        deallocate(self%gpu_setup%cublasHandleArray)
 !        deallocate(self%gpu_setup%cudaDeviceArray)
 !#endif
@@ -1245,7 +1245,7 @@ module elpa_api
 !        deallocate(self%gpu_setup%syclDeviceArray)
 !#endif
 !
-!#if defined(WITH_NVIDIA_GPU_VERSION) && defined(WITH_NVIDIA_CUSOLVER)
+!#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) && defined(WITH_NVIDIA_CUSOLVER)
 !        deallocate(self%gpu_setup%cusolverHandleArray)
 !#endif
 !

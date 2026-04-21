@@ -55,12 +55,14 @@ module pxgemm_multiply_gpu
 
   public
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
 
   interface
     subroutine gpu_copy_aux_full_c(dataType, lhs_dev, rhs_dev, l_rows, l_cols, lld_lhs, lld_rhs, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_copy_aux_full_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_copy_aux_full_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_copy_aux_full_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -81,6 +83,8 @@ module pxgemm_multiply_gpu
                                                   l_rows, l_cols, nblk_mult, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_copy_and_set_zeros_aux_full_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_copy_and_set_zeros_aux_full_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_copy_and_set_zeros_aux_full_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -101,6 +105,8 @@ module pxgemm_multiply_gpu
                                                     nblk_mult_cols, nblk, np_bc_fine, np_cols_fine, np_cols, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_copy_and_set_zeros_aux_a_full_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_copy_and_set_zeros_aux_a_full_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_copy_and_set_zeros_aux_a_full_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -122,6 +128,8 @@ module pxgemm_multiply_gpu
                                                     SM_count, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_copy_and_set_zeros_aux_b_full_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_copy_and_set_zeros_aux_b_full_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_copy_and_set_zeros_aux_b_full_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -144,6 +152,8 @@ module pxgemm_multiply_gpu
                                         np_rows_fine, np_cols_fine, np_rows, np_cols, SM_count, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_ccl_copy_buf_send_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_ccl_copy_buf_send_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_ccl_copy_buf_send_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -166,6 +176,8 @@ module pxgemm_multiply_gpu
                                         np_rows_fine, np_cols_fine, np_rows, np_cols, SM_count, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_ccl_copy_buf_recv_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_ccl_copy_buf_recv_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_ccl_copy_buf_recv_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -191,6 +203,8 @@ module pxgemm_multiply_gpu
                                                         np_dirs_fine, SM_count, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_copy_and_set_zeros_aux_ab_full_tn_nt_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_copy_and_set_zeros_aux_ab_full_tn_nt_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_copy_and_set_zeros_aux_ab_full_tn_nt_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -218,6 +232,8 @@ module pxgemm_multiply_gpu
                                     SM_count, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_update_c_tn_nt_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_update_c_tn_nt_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_update_c_tn_nt_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -248,7 +264,7 @@ module pxgemm_multiply_gpu
       integer(kind=c_intptr_t), value    :: lhs_dev, rhs_dev
       integer(kind=c_int), value         :: l_rows, l_cols, lld_lhs, lld_rhs, debug
       integer(kind=c_intptr_t), value    :: my_stream
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_copy_aux_full_c(dataType, lhs_dev, rhs_dev, l_rows, l_cols, lld_lhs, lld_rhs, debug, my_stream)
 #endif
     end subroutine
@@ -262,7 +278,7 @@ module pxgemm_multiply_gpu
       integer(kind=c_intptr_t), value    :: mat_dev, aux_mat_full_dev
       integer(kind=c_int), value         :: l_rows, l_cols, nblk_mult, debug
       integer(kind=c_intptr_t), value    :: my_stream
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_copy_and_set_zeros_aux_full_c (dataType, mat_dev, aux_mat_full_dev, &
                                               l_rows, l_cols, nblk_mult, debug, my_stream)
 #endif
@@ -277,7 +293,7 @@ module pxgemm_multiply_gpu
       integer(kind=c_intptr_t), value    :: mat_dev, aux_mat_full_dev
       integer(kind=c_int), value         :: l_rows, nblk_mult_cols, nblk, np_bc_fine, np_cols_fine, np_cols, debug
       integer(kind=c_intptr_t), value    :: my_stream
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_copy_and_set_zeros_aux_a_full_c (dataType, mat_dev, aux_mat_full_dev, l_rows, &
                                                 nblk_mult_cols, nblk, np_bc_fine, np_cols_fine, np_cols, debug, my_stream)
 #endif
@@ -294,7 +310,7 @@ module pxgemm_multiply_gpu
       integer(kind=c_int), value         :: l_rows, l_cols, nblk_mult, nblk_mult_rows, nblk, np_fine, np_rows_fine, np_rows, &
                                             SM_count, debug
       integer(kind=c_intptr_t), value    :: my_stream
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_copy_and_set_zeros_aux_b_full_c (dataType, mat_dev, aux_mat_full_dev, l_rows, l_cols, nblk_mult, &
                                                 nblk_mult_rows, nblk, np_fine, np_rows_fine, np_rows, &
                                                 SM_count, debug, my_stream)
@@ -311,7 +327,7 @@ module pxgemm_multiply_gpu
       integer(kind=c_int), value         :: l_rows, l_cols, lld_buf, nblk, i_block_loc_fine_max, j_block_loc_fine_max, &
                                             np_fine, np_bc_fine, np_rows_fine, np_cols_fine, np_rows, np_cols, SM_count, debug
       integer(kind=c_intptr_t), value    :: my_stream
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_ccl_copy_buf_send_c (dataType, a_dev, buf_send_dev, l_rows, l_cols, lld_buf, &
                                     nblk, i_block_loc_fine_max, j_block_loc_fine_max, np_fine, np_bc_fine, &
                                     np_rows_fine, np_cols_fine, np_rows, np_cols, SM_count, debug, my_stream)
@@ -328,7 +344,7 @@ module pxgemm_multiply_gpu
       integer(kind=c_int), value         :: l_rows, l_cols, lld_buf, nblk, i_block_loc_fine_max, j_block_loc_fine_max, &
                                             np_fine, np_bc_fine, np_rows_fine, np_cols_fine, np_rows, np_cols, SM_count, debug
       integer(kind=c_intptr_t), value    :: my_stream
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_ccl_copy_buf_recv_c (dataType, at_col_dev, buf_recv_dev, l_rows, l_cols, lld_buf, &
                                     nblk, i_block_loc_fine_max, j_block_loc_fine_max, np_fine, np_bc_fine, &
                                     np_rows_fine, np_cols_fine, np_rows, np_cols, SM_count, debug, my_stream)
@@ -351,7 +367,7 @@ module pxgemm_multiply_gpu
                                             np_t_fine, np_cols, my_pcol, &
                                             np_dirs_fine, SM_count, debug
       integer(kind=c_intptr_t), value    :: my_stream
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_copy_and_set_zeros_aux_ab_full_tn_nt_c(dataType, a_transposed, &
                                                       a_dev, b_dev, aux_a_full_dev, aux_b_full_dev, &
                                                       l_rows, l_cols, nblk_mult_max, nblk_mult, nblk, &
@@ -377,7 +393,7 @@ module pxgemm_multiply_gpu
                                             np_dirs_t, my_pdir_t, np_fine, &
                                             SM_count, debug
       integer(kind=c_intptr_t), value    :: my_stream
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_update_c_tn_nt_c(dataType, a_transposed, &
                                 c_dev, tmp1_full_dev, beta_int, &
                                 l_rows, l_cols, nblk_mult_max, nblk_mult, nblk, &

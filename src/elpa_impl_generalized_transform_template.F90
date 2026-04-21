@@ -68,7 +68,7 @@ subroutine elpa_transform_generalized_a_h_a_&
   use elpa_utilities, only : error_unit
   use mod_query_gpu_usage
   use elpa_gpu
-#if defined(WITH_NVIDIA_GPU_VERSION) && defined(WITH_NVTX)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) && defined(WITH_NVTX)
   use cuda_functions ! for NVTX labels
 #elif defined(WITH_AMD_GPU_VERSION) && defined(WITH_ROCTX)
   use hip_functions  ! for ROCTX labels
@@ -130,7 +130,7 @@ subroutine elpa_transform_generalized_a_h_a_&
   np_cols = int(np_colsMPI, kind=c_int)
   
   useGPU = .false.
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
   if (.not.(query_gpu_usage(self, "Generalized_transform", useGPU))) then
     write(error_unit,*) "Generalized transform: Problem getting options for GPU. Aborting..."
     error = ELPA_ERROR
@@ -422,7 +422,7 @@ subroutine elpa_transform_back_generalized_a_h_a_&
   use mod_query_gpu_usage
   use elpa_utilities , only : check_alloc, check_allocate_f, error_unit
   use elpa_gpu
-#if defined(WITH_NVIDIA_GPU_VERSION) && defined(WITH_NVTX)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) && defined(WITH_NVTX)
   use cuda_functions ! for NVTX labels
 #elif defined(WITH_AMD_GPU_VERSION) && defined(WITH_ROCTX)
   use hip_functions  ! for ROCTX labels
@@ -481,7 +481,7 @@ subroutine elpa_transform_back_generalized_a_h_a_&
   np_cols = int(np_colsMPI,kind=c_int)
 
   useGPU = .false.
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
   if (.not.(query_gpu_usage(self, "elpa_transform_back_generalized", useGPU))) then
     write(error_unit,*) "elpa_transform_back_generalized: Problem getting options for GPU. Aborting..."
     error = ELPA_ERROR

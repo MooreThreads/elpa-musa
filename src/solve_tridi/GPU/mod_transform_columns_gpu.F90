@@ -55,13 +55,15 @@ module transform_columns_gpu
 
   public
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
 
   interface
   subroutine gpu_transform_one_column_c(dataType, a_dev, b_dev, c_dev, alpha_dev, beta_dev, &
                                         n_elements, SM_count, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_transform_one_column_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_transform_one_column_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name="hip_transform_one_column_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -82,6 +84,8 @@ module transform_columns_gpu
                                           ldq, l_rows, l_rqs, l_rqe, lc1, lc2, SM_count, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_transform_two_columns_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_transform_two_columns_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name="hip_transform_two_columns_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -111,7 +115,7 @@ module transform_columns_gpu
       integer(kind=c_int), value         :: n_elements, SM_count, debug
       integer(kind=c_intptr_t), value    :: my_stream
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_transform_one_column_c(dataType, a_dev, b_dev, c_dev, alpha_dev, beta_dev, &
                                       n_elements, SM_count, debug, my_stream)
 #endif
@@ -127,7 +131,7 @@ module transform_columns_gpu
       integer(kind=c_int), value         :: ldq, l_rows, l_rqs, l_rqe, lc1, lc2, SM_count, debug
       integer(kind=c_intptr_t), value    :: my_stream
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_transform_two_columns_c (dataType, q_dev, qtrans_dev, tmp_dev, &
                                         ldq, l_rows, l_rqs, l_rqe, lc1, lc2, SM_count, debug, my_stream)
 #endif

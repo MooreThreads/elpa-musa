@@ -53,6 +53,32 @@
 #define float_complex  cuFloatComplex
 #endif
 
+#ifdef WITH_MUSA_GPU_VERSION
+#define INLINE_DEVICE __forceinline__ __device__
+#define double_complex muDoubleComplex
+#define float_complex  muFloatComplex
+#define cuDoubleComplex muDoubleComplex
+#define cuFloatComplex  muFloatComplex
+#define make_cuDoubleComplex make_muDoubleComplex
+#define make_cuFloatComplex  make_muFloatComplex
+#define cuCadd  muCadd
+#define cuCaddf muCaddf
+#define cuCsub  muCsub
+#define cuCsubf muCsubf
+#define cuCmul  muCmul
+#define cuCmulf muCmulf
+#define cuCdiv  muCdiv
+#define cuCdivf muCdivf
+#define cuConj  muConj
+#define cuConjf muConjf
+#define cuCreal muCreal
+#define cuCrealf muCrealf
+#define cuCimag muCimag
+#define cuCimagf muCimagf
+#define cuCabs  muCabs
+#define cuCabsf muCabsf
+#endif
+
 #ifdef WITH_AMD_GPU_VERSION
 #define INLINE_DEVICE __forceinline__ __device__
 #define double_complex hipDoubleComplex
@@ -73,7 +99,7 @@ template <typename T> inline T elpaHostNumberFromInt(int number);
 template <> inline double elpaHostNumberFromInt<double>(int number) {return (double) number;}
 template <> inline float  elpaHostNumberFromInt<float> (int number) {return (float) number;}
 template <> inline double_complex elpaHostNumberFromInt<double_complex>(int number) {
-#if defined(WITH_NVIDIA_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return make_cuDoubleComplex ((double)number, 0.0);
 #elif defined(WITH_AMD_GPU_VERSION)
   return make_hipDoubleComplex((double)number, 0.0);
@@ -82,7 +108,7 @@ template <> inline double_complex elpaHostNumberFromInt<double_complex>(int numb
 #endif
 }
 template <>  inline float_complex elpaHostNumberFromInt<float_complex> (int number) {
-#if defined(WITH_NVIDIA_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return make_cuFloatComplex ((float) number, 0.0f);
 #elif defined(WITH_AMD_GPU_VERSION)
   return make_hipFloatComplex((float) number, 0.0f);
@@ -105,7 +131,7 @@ template <typename T> INLINE_DEVICE T elpaDeviceNumber(double number);
 template <>  INLINE_DEVICE double elpaDeviceNumber<double>(double number) {return number;}
 template <>  INLINE_DEVICE float  elpaDeviceNumber<float> (double number) {return (float) number;}
 template <>  INLINE_DEVICE double_complex elpaDeviceNumber<double_complex>(double number) {
-#if defined(WITH_NVIDIA_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return make_cuDoubleComplex (number, 0.0);
 #elif defined(WITH_AMD_GPU_VERSION)
   return make_hipDoubleComplex(number, 0.0);
@@ -114,7 +140,7 @@ template <>  INLINE_DEVICE double_complex elpaDeviceNumber<double_complex>(doubl
 #endif
 }
 template <>  INLINE_DEVICE float_complex elpaDeviceNumber<float_complex> (double number) {
-#if defined(WITH_NVIDIA_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return make_cuFloatComplex ((float) number, 0.0f);
 #elif defined(WITH_AMD_GPU_VERSION)
   return make_hipFloatComplex((float) number, 0.0f);
@@ -128,7 +154,7 @@ template <typename T, typename T_real>  INLINE_DEVICE T elpaDeviceNumberFromReal
 template <> INLINE_DEVICE double elpaDeviceNumberFromRealImag<double>(double Real, double Imag) {return Real;}
 template <> INLINE_DEVICE float  elpaDeviceNumberFromRealImag<float> (float  Real, float  Imag) {return Real;}
 template <> INLINE_DEVICE double_complex elpaDeviceNumberFromRealImag<double_complex>(double Real, double Imag) {
-#if defined(WITH_NVIDIA_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return make_cuDoubleComplex(Real, Imag);
 #elif defined(WITH_AMD_GPU_VERSION)
   return make_hipDoubleComplex(Real, Imag);
@@ -137,7 +163,7 @@ template <> INLINE_DEVICE double_complex elpaDeviceNumberFromRealImag<double_com
 #endif
 }
 template <> INLINE_DEVICE float_complex elpaDeviceNumberFromRealImag<float_complex>(float  Real, float  Imag) {
-#if defined(WITH_NVIDIA_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return make_cuFloatComplex (Real, Imag);
 #elif defined(WITH_AMD_GPU_VERSION)
   return make_hipFloatComplex(Real, Imag);
@@ -149,7 +175,7 @@ template <> INLINE_DEVICE float_complex elpaDeviceNumberFromRealImag<float_compl
 INLINE_DEVICE double elpaDeviceAdd(double a, double b) { return a + b; }
 INLINE_DEVICE float  elpaDeviceAdd(float a, float b)   { return a + b; }
 INLINE_DEVICE double_complex elpaDeviceAdd(double_complex a, double_complex b) {
-#if defined(WITH_NVIDIA_GPU_VERSION)  
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)  
   return cuCadd (a, b); 
 #elif defined(WITH_AMD_GPU_VERSION)
   return hipCadd(a, b);
@@ -158,7 +184,7 @@ INLINE_DEVICE double_complex elpaDeviceAdd(double_complex a, double_complex b) {
 #endif  
 }
 INLINE_DEVICE float_complex elpaDeviceAdd(float_complex a, float_complex b) {
-#if defined(WITH_NVIDIA_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return cuCaddf(a, b);
 #elif defined(WITH_AMD_GPU_VERSION)
   return hipCaddf(a, b);
@@ -170,7 +196,7 @@ INLINE_DEVICE float_complex elpaDeviceAdd(float_complex a, float_complex b) {
 INLINE_DEVICE double elpaDeviceSubtract(double a, double b) { return a - b; }
 INLINE_DEVICE float  elpaDeviceSubtract(float a, float b)   { return a - b; }
 INLINE_DEVICE double_complex elpaDeviceSubtract(double_complex a, double_complex b) {
-#if defined(WITH_NVIDIA_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return cuCsub (a, b);
 #elif defined(WITH_AMD_GPU_VERSION)
   return hipCsub(a, b);
@@ -179,7 +205,7 @@ INLINE_DEVICE double_complex elpaDeviceSubtract(double_complex a, double_complex
 #endif
 }
 INLINE_DEVICE float_complex elpaDeviceSubtract(float_complex a, float_complex b) {
-#if defined(WITH_NVIDIA_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return cuCsubf(a, b);
 #elif defined(WITH_AMD_GPU_VERSION)
   return hipCsubf(a, b);
@@ -191,7 +217,7 @@ INLINE_DEVICE float_complex elpaDeviceSubtract(float_complex a, float_complex b)
 INLINE_DEVICE double elpaDeviceMultiply(double a, double b) { return a * b; }
 INLINE_DEVICE float  elpaDeviceMultiply(float  a, float  b) { return a * b; }
 INLINE_DEVICE double_complex elpaDeviceMultiply(double_complex a, double_complex b) {
-#if defined(WITH_NVIDIA_GPU_VERSION)  
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)  
   return cuCmul (a, b); 
 #elif defined(WITH_AMD_GPU_VERSION)
   return hipCmul(a, b);
@@ -200,7 +226,7 @@ INLINE_DEVICE double_complex elpaDeviceMultiply(double_complex a, double_complex
 #endif  
 }
 INLINE_DEVICE float_complex elpaDeviceMultiply(float_complex a, float_complex b) {
-#if defined(WITH_NVIDIA_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return cuCmulf(a, b);
 #elif defined(WITH_AMD_GPU_VERSION)
   return hipCmulf(a, b);
@@ -212,7 +238,7 @@ INLINE_DEVICE float_complex elpaDeviceMultiply(float_complex a, float_complex b)
 INLINE_DEVICE double elpaDeviceDivide(double a, double b) { return a / b; }
 INLINE_DEVICE float  elpaDeviceDivide(float  a, float  b) { return a / b; }
 INLINE_DEVICE double_complex elpaDeviceDivide(double_complex a, double_complex b) {
-#if defined(WITH_NVIDIA_GPU_VERSION)  
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)  
   return cuCdiv (a, b); 
 #elif defined(WITH_AMD_GPU_VERSION)
   return hipCdiv(a, b);
@@ -221,7 +247,7 @@ INLINE_DEVICE double_complex elpaDeviceDivide(double_complex a, double_complex b
 #endif
 }
 INLINE_DEVICE float_complex elpaDeviceDivide(float_complex a, float_complex b) {
-#if defined(WITH_NVIDIA_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return cuCdivf(a, b);
 #elif defined(WITH_AMD_GPU_VERSION)
   return hipCdivf(a, b);
@@ -236,7 +262,7 @@ INLINE_DEVICE float  elpaDeviceSqrt(float  number) { return sqrtf(number); }
 INLINE_DEVICE double elpaDeviceComplexConjugate(double number) {return number;}
 INLINE_DEVICE float elpaDeviceComplexConjugate(float  number) {return number;}
 INLINE_DEVICE double_complex elpaDeviceComplexConjugate(double_complex number) {
-#if defined(WITH_NVIDIA_GPU_VERSION) 
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) 
   return cuConj(number);
 #elif defined(WITH_AMD_GPU_VERSION)
   return hipConj(number);
@@ -245,7 +271,7 @@ INLINE_DEVICE double_complex elpaDeviceComplexConjugate(double_complex number) {
 #endif
 }
 INLINE_DEVICE float_complex elpaDeviceComplexConjugate(float_complex number) {
-#if defined(WITH_NVIDIA_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return cuConjf(number);
 #elif defined(WITH_AMD_GPU_VERSION)
   return hipConjf(number);
@@ -257,14 +283,14 @@ INLINE_DEVICE float_complex elpaDeviceComplexConjugate(float_complex number) {
 INLINE_DEVICE double elpaDeviceRealPart(double number) {return number;}
 INLINE_DEVICE float  elpaDeviceRealPart(float  number) {return number;}
 INLINE_DEVICE double elpaDeviceRealPart(double_complex number) {
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION)  
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION)  
   return number.x;
 #else
   return number.real();
 #endif
 }
 INLINE_DEVICE float  elpaDeviceRealPart(float_complex number) {
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION)    
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION)    
   return number.x;
 #else
   return number.real();
@@ -274,14 +300,14 @@ INLINE_DEVICE float  elpaDeviceRealPart(float_complex number) {
 INLINE_DEVICE double elpaDeviceImagPart(double number) {return 0.0;}
 INLINE_DEVICE float  elpaDeviceImagPart(float  number) {return 0.0f;}
 INLINE_DEVICE double elpaDeviceImagPart(double_complex number) {
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION)
   return number.y;
 #else
   return number.imag();
 #endif
 }
 INLINE_DEVICE float elpaDeviceImagPart(float_complex number) {
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION)
   return number.y;
 #else
   return number.imag();
@@ -291,7 +317,7 @@ INLINE_DEVICE float elpaDeviceImagPart(float_complex number) {
 INLINE_DEVICE double elpaDeviceEqual(double a, double b) { return (double)(a == b); }
 INLINE_DEVICE float  elpaDeviceEqual(float  a, float  b) { return (float)(a == b); }
 INLINE_DEVICE double_complex elpaDeviceEqual(double_complex a, double_complex b) {
-#if defined(WITH_NVIDIA_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return make_cuDoubleComplex((a.x == b.x) && (a.y == b.y) ? 1.0 : 0.0, 0.0);
 #elif defined(WITH_AMD_GPU_VERSION)
   return make_hipDoubleComplex((a.x == b.x) && (a.y == b.y) ? 1.0 : 0.0, 0.0);
@@ -300,7 +326,7 @@ INLINE_DEVICE double_complex elpaDeviceEqual(double_complex a, double_complex b)
 #endif
 }
 INLINE_DEVICE float_complex elpaDeviceEqual(float_complex a, float_complex b) {
-#if defined(WITH_NVIDIA_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return make_cuFloatComplex((a.x == b.x) && (a.y == b.y) ? 1.0f : 0.0f, 0.0f);
 #elif defined(WITH_AMD_GPU_VERSION)
   return make_hipFloatComplex((a.x == b.x) && (a.y == b.y) ? 1.0f : 0.0f, 0.0f);
@@ -312,7 +338,7 @@ INLINE_DEVICE float_complex elpaDeviceEqual(float_complex a, float_complex b) {
 INLINE_DEVICE bool elpaDeviceEqualBool(double a, double b) { return a == b; }
 INLINE_DEVICE bool elpaDeviceEqualBool(float  a, float  b) { return a == b; }
 INLINE_DEVICE bool elpaDeviceEqualBool(double_complex a, double_complex b) {
-#if defined(WITH_NVIDIA_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return (a.x == b.x) && (a.y == b.y);
 #elif defined(WITH_AMD_GPU_VERSION)
   return (a.x == b.x) && (a.y == b.y);
@@ -321,7 +347,7 @@ INLINE_DEVICE bool elpaDeviceEqualBool(double_complex a, double_complex b) {
 #endif
 }
 INLINE_DEVICE bool elpaDeviceEqualBool(float_complex a, float_complex b) {
-#if defined(WITH_NVIDIA_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return (a.x == b.x) && (a.y == b.y);
 #elif defined(WITH_AMD_GPU_VERSION)
   return (a.x == b.x) && (a.y == b.y);
@@ -365,7 +391,7 @@ static __inline__ __device__ double atomicAdd(double* address, double val)
 #endif
 
 // atomicAdd for double_complex and float_complex
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION)
 template<typename T>
 INLINE_DEVICE void atomicAdd(T* address, T val) {
     atomicAdd(&(address->x), val.x);

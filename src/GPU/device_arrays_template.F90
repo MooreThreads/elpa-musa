@@ -44,7 +44,7 @@
 ! This file was written by A. Marek, MPCDF
 #endif
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
           if (.not.(allocated(OBJECT%gpu_setup%cudaDeviceArray))) then
             allocate(OBJECT%gpu_setup%cudaDeviceArray(0:maxThreads-1))
             allocate(OBJECT%gpu_setup%gpuDeviceArray(0:maxThreads-1))
@@ -89,7 +89,7 @@
           endif
 #endif
           if (.not.(success)) then
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
             print *,"Cannot set CudaDevice"
 #endif
 #ifdef WITH_AMD_GPU_VERSION

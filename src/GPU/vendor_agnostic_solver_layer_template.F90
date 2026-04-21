@@ -53,7 +53,7 @@
 
   function gpusolver_get_version() result(version)
     use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
     use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -66,7 +66,7 @@
 
     integer(kind=c_int)                  :: version
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
     version = cusolver_get_version()
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -607,7 +607,7 @@
       integer(kind=c_intptr_t)        :: d_dev, e_dev, q_dev, info_dev
       integer(kind=c_intptr_t)        :: handle
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       ! call cusolver_stedc(datatype, n, d_dev, e_dev, q_dev, ldq, info_dev, handle)
       print *, "cusolver_stedc doesn't exist yet. Exiting"
       stop 1

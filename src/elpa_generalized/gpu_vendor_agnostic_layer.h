@@ -52,7 +52,23 @@
 extern "C" {
 #endif
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#ifdef WITH_MUSA_GPU_VERSION
+#define cudaMemcpyHostToDeviceFromC musaMemcpyHostToDeviceFromC
+#define cudaMemcpyDeviceToHostFromC musaMemcpyDeviceToHostFromC
+#define cudaGetDeviceCountFromC musaGetDeviceCountFromC
+#define cudaSetDeviceFromC musaSetDeviceFromC
+#define cudaMallocFromC musaMallocFromC
+#define cudaFreeFromC musaFreeFromC
+#define cudaMemcpyFromC musaMemcpyFromC
+#define cudaDeviceSynchronizeFromC musaDeviceSynchronizeFromC
+#define cudaMemsetFromC musaMemsetFromC
+#define cublasDgemm_elpa_wrapper_intptr_handle mublasDgemm_elpa_wrapper_intptr_handle
+#define cublasSgemm_elpa_wrapper_intptr_handle mublasSgemm_elpa_wrapper_intptr_handle
+#define cublasZgemm_elpa_wrapper_intptr_handle mublasZgemm_elpa_wrapper_intptr_handle
+#define cublasCgemm_elpa_wrapper_intptr_handle mublasCgemm_elpa_wrapper_intptr_handle
+#endif
+
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
 int cudaMemcpyHostToDeviceFromC();
 int cudaMemcpyDeviceToHostFromC();
 int cudaGetDeviceCountFromC(int *count);
@@ -106,8 +122,34 @@ void rocblasCgemm_elpa_wrapper_intptr_handle(intptr_t* gpuHandle, char transa, c
                                const float _Complex *B, int ldb, float _Complex beta,
                                float _Complex *C, int ldc);
 #endif
+#ifdef WITH_MUSA_GPU_VERSION
+int musaMemcpyHostToDeviceFromC();
+int musaMemcpyDeviceToHostFromC();
+int musaGetDeviceCountFromC(int *count);
+int musaSetDeviceFromC(int n);
+int musaMallocFromC(intptr_t *a, size_t width_height);
+int musaFreeFromC(intptr_t *a);
+int musaMemcpyFromC(intptr_t *dest, intptr_t *src, size_t count, int dir);
+int musaDeviceSynchronizeFromC();
+int musaMemsetFromC(intptr_t *a, int value, size_t count);
+void mublasDgemm_elpa_wrapper_intptr_handle(intptr_t* gpuHandle, char transa, char transb, int m, int n, int k,
+                              double alpha, const double *A, int lda,
+                              const double *B, int ldb, double beta,
+                              double *C, int ldc);
+void mublasSgemm_elpa_wrapper_intptr_handle(intptr_t* gpuHandle, char transa, char transb, int m, int n, int k,
+                              float alpha, const float *A, int lda,
+                              const float *B, int ldb, float beta,
+                              float *C, int ldc);
+void mublasZgemm_elpa_wrapper_intptr_handle(intptr_t* gpuHandle, char transa, char transb, int m, int n, int k,
+                              double _Complex alpha, const double _Complex *A, int lda,
+                              const double _Complex *B, int ldb, double _Complex beta,
+                              double _Complex *C, int ldc);
+void mublasCgemm_elpa_wrapper_intptr_handle(intptr_t* gpuHandle, char transa, char transb, int m, int n, int k,
+                               float _Complex alpha, const float _Complex *A, int lda,
+                               const float _Complex *B, int ldb, float _Complex beta,
+                               float _Complex *C, int ldc);
+#endif
 #ifdef WITH_SYCL_GPU_VERSION
-int syclMemcpyHostToDeviceFromC();
 int syclMemcpyDeviceToHostFromC();
 int syclGetDeviceCountFromC(int *count);
 int syclSetDeviceFromC(int n);

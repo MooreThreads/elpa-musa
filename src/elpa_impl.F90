@@ -672,13 +672,13 @@ module elpa_impl
     function elpa_setup_gpu(self) result(error)
       use precision
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       use mod_query_gpu_usage
       use elpa_gpu, only : gpublasDefaultPointerMode, gpu_getdevicecount, gpublas_get_version
       use elpa_mpi
       use elpa_omp
 #endif
-#if defined(WITH_NVIDIA_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #if defined(WITH_AMD_GPU_VERSION)
@@ -698,7 +698,7 @@ module elpa_impl
       class(elpa_impl_t), intent(inout)   :: self
       integer(kind=ik)                    :: error
       integer(kind=c_int)                 :: myid
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
 
       logical                             :: useGPU
       logical                             :: success
@@ -733,9 +733,9 @@ module elpa_impl
       error = ELPA_ERROR_SETUP
       self%gpu_setup%useCCL = .false.
       gpu = 0
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
 
-#if defined(WITH_NVIDIA_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       call self%get("nvidia-gpu",gpu, error)
       if (check_elpa_get(error, ELPA_ERROR_SETUP)) return
 #endif
@@ -759,7 +759,7 @@ module elpa_impl
         return
       endif
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
     ! check legacy GPU setings
     if (.not.(query_gpu_usage(self, "ELPA_SETUP_GPU", useGPU))) then
       write(error_unit,*) "ELPA_SETUP_GPU: error when querying gpu settings. Aborting..."
@@ -774,7 +774,7 @@ module elpa_impl
       if (debug .eq. 1) then
         wantDebugMessage = .true.
       endif
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
 #undef OBJECT
 #define OBJECT self
 #undef ADDITIONAL_OBJECT_CODE
@@ -1699,7 +1699,7 @@ module elpa_impl
 #ifdef WITH_OPENMP_TRADITIONAL
       use elpa_omp
 #endif
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -1844,7 +1844,7 @@ module elpa_impl
       maxThreads=1
 #endif /* WITH_OPENMP_TRADITIONAL */
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       if (allocated(self%gpu_setup%gpublasHandleArray)) then
 
 #include "./GPU/handle_destruction_template.F90"
@@ -1858,7 +1858,7 @@ module elpa_impl
           write(error_unit, "(a,i0,a)") "ELPA: elpa_destroy cannot deallocate gpuDeviceArray: " // errorMessage
         endif 
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         deallocate(self%gpu_setup%cublasHandleArray, stat=istat, errmsg=errorMessage)
         if (istat .ne. 0) then
           write(error_unit, "(a,i0,a)") "ELPA: elpa_destroy cannot deallocate cublasHandleArray: " // errorMessage
@@ -1902,7 +1902,7 @@ module elpa_impl
         endif 
 #endif
 
-#if defined(WITH_NVIDIA_GPU_VERSION) && defined(WITH_NVIDIA_CUSOLVER)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) && defined(WITH_NVIDIA_CUSOLVER)
         deallocate(self%gpu_setup%gpusolverHandleArray, stat=istat, errmsg=errorMessage)
         if (istat .ne. 0) then
           write(error_unit, "(a,i0,a)") "ELPA: elpa_destroy cannot deallocate gpusolverHandleArray: " // errorMessage

@@ -54,6 +54,10 @@ module cuda_functions
 
   public
 
+#ifdef WITH_MUSA_GPU_VERSION
+#include "../MUSA/musa_template.F90"
+#else
 #include "./cuda_template.F90"
+#endif
 
 end module cuda_functions

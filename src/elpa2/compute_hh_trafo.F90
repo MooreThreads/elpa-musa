@@ -199,7 +199,7 @@ last_stripe_width, kernel, my_stream, success)
   j = -99
 
   !if (wantDebug) then
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
     if (useGPU .and. &
 #if defined(WITH_NVIDIA_GPU_SM80_COMPUTE_CAPABILITY)
 #if REALCASE == 1

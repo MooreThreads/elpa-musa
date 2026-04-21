@@ -274,7 +274,7 @@
 
 #define KERNEL_STRING "real_kernel"
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
 #undef GPU_KERNEL
 #undef GPU_KERNEL2
 #define GPU_KERNEL ELPA_2STAGE_REAL_NVIDIA_GPU
@@ -305,7 +305,7 @@
 
 #define KERNEL_STRING "complex_kernel"
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
 #undef GPU_KERNEL
 #define GPU_KERNEL ELPA_2STAGE_COMPLEX_NVIDIA_GPU
 #endif /* WITH_NVIDIA_GPU_VERSION */
@@ -345,7 +345,7 @@
 
     wantDebug = debug == 1
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
     ! check legacy GPU setings
 #ifdef ACTIVATE_SKEW
     if (.not.(query_gpu_usage(obj, "ELPA2_SKEW", useGPU))) then

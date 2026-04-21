@@ -50,7 +50,7 @@
         gpuAvailable = .true.
 
         ! print warning if NVIDIA or AMD without streams
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
 #ifndef WITH_GPU_STREAMS
 #ifdef ADDITIONAL_OBJECT_CODE
         write(error_unit,*) "You use the NVIDIA-GPUs without enabling nvidia-gpu streams at build time!"
@@ -137,7 +137,7 @@
 #endif /* WITH_OPENMP_TRADITIONAL */
 
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       if (.not.(allocated(OBJECT%gpu_setup%cublasHandleArray))) then
         allocate(OBJECT%gpu_setup%cublasHandleArray(0:maxThreads-1))
         allocate(OBJECT%gpu_setup%gpublasHandleArray(0:maxThreads-1))
@@ -147,7 +147,7 @@
         enddo
       endif
 #endif
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
 #ifdef WITH_NVIDIA_CUSOLVER
       if (.not.(allocated(OBJECT%gpu_setup%cusolverHandleArray))) then
         allocate(OBJECT%gpu_setup%cusolverHandleArray(0:maxThreads-1))
@@ -330,7 +330,7 @@
       endif
 #endif /* WITH_MPI */
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       success = gpublas_get_version(OBJECT%gpu_setup%cublasHandleArray(0), cublas_version)
       if (.not.(success)) then
         write(error_unit,*) "error in gpublas_get_version"
@@ -359,7 +359,7 @@
 !#endif
 
 ! query device properties
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       ! ThreadsPerBlock
       attribute = OBJECT%gpu_setup%gpuDevAttrMaxThreadsPerBlock
       success = cuda_device_get_attributes(value, attribute)
@@ -619,7 +619,7 @@
       OBJECT%gpu_setup%gpuSMcount   = value
 #endif /* WITH_SYCL_GPU_VERSION */
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       if (wantDebugMessage .and. myid == 0) then
         write(error_unit,*) "gpuMaxThreadsPerBlock: ",OBJECT%gpu_setup%gpuMaxThreadsPerBlock
         write(error_unit,*) "gpuDevMaxBlockDimX: ",   OBJECT%gpu_setup%gpuDevMaxBlockDimX
@@ -634,7 +634,7 @@
 
       if (gpuAvailable) then
         ! print warning if NVIDIA or AMD or SYCL without streams
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
 #ifndef WITH_GPU_STREAMS
 #ifdef ADDITIONAL_OBJECT_CODE
         write(error_unit,*) "You use the NVIDIA-GPUs without enabling nvidia-gpu streams at build time!"

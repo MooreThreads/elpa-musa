@@ -97,7 +97,7 @@ function elpa_solve_evp_&
 #endif /* DEVICE_POINTER */
 
    use precision
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
    use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION

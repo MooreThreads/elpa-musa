@@ -57,4 +57,3 @@ module elpa_blas_gpu
 #include "./vendor_agnostic_blas_layer_template.F90"
 
 end module
-

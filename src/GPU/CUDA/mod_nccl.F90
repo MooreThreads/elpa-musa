@@ -52,7 +52,9 @@ module nccl_functions
   implicit none
 
   public
-#ifdef WITH_NVIDIA_NCCL
+#ifdef WITH_MUSA_MCCL
+#include "../MUSA/mccl_template.F90"
+#elif defined(WITH_NVIDIA_NCCL)
 #include "./nccl_template.F90"
 #endif
 

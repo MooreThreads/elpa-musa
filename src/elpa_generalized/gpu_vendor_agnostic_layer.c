@@ -60,7 +60,7 @@
 #include "./gpu_vendor_agnostic_layer.h"
 
 void set_gpu_parameters(int* gpuMemcpyHostToDevice, int* gpuMemcpyDeviceToHost){
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   *gpuMemcpyHostToDevice = cudaMemcpyHostToDeviceFromC();
   *gpuMemcpyDeviceToHost = cudaMemcpyDeviceToHostFromC();
 #endif 
@@ -78,7 +78,7 @@ void set_gpu_parameters(int* gpuMemcpyHostToDevice, int* gpuMemcpyDeviceToHost){
 }
 
 int gpuGetDeviceCount(int *count){
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return cudaGetDeviceCountFromC(count);
 #endif 
 #ifdef WITH_AMD_GPU_VERSION
@@ -94,7 +94,7 @@ int gpuGetDeviceCount(int *count){
 }
 
 int gpuSetDevice(int n){
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return cudaSetDeviceFromC(n);
 #endif   
 #ifdef WITH_AMD_GPU_VERSION
@@ -110,7 +110,7 @@ int gpuSetDevice(int n){
 }
 
 int gpuMalloc(intptr_t *a, size_t width_height) {
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return cudaMallocFromC(a, width_height);
 #endif   
 #ifdef WITH_AMD_GPU_VERSION
@@ -126,7 +126,7 @@ int gpuMalloc(intptr_t *a, size_t width_height) {
 }
 
 int gpuFree(intptr_t *a) {
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return cudaFreeFromC(a);
 #endif   
 #ifdef WITH_AMD_GPU_VERSION
@@ -142,7 +142,7 @@ int gpuFree(intptr_t *a) {
 }
 
 int gpuMemcpy(intptr_t *dest, intptr_t *src, size_t count, int dir){
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return cudaMemcpyFromC(dest, src, count, dir);
 #endif  
 #ifdef WITH_AMD_GPU_VERSION
@@ -158,7 +158,7 @@ int gpuMemcpy(intptr_t *dest, intptr_t *src, size_t count, int dir){
 }
 
 int gpuDeviceSynchronize(){
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return cudaDeviceSynchronizeFromC();
 #endif  
 #ifdef WITH_AMD_GPU_VERSION
@@ -174,7 +174,7 @@ int gpuDeviceSynchronize(){
 }
 
 int gpuMemset(intptr_t *a, int value, size_t count){
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   return cudaMemsetFromC(a, value, count);
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -193,7 +193,7 @@ void gpublasDgemm(intptr_t* gpuHandle, char transa, char transb, int m, int n, i
                               double alpha, const double *A, int lda,
                               const double *B, int ldb, double beta,
                               double *C, int ldc){
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   cublasDgemm_elpa_wrapper_intptr_handle(gpuHandle, transa, transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -211,7 +211,7 @@ void gpublasSgemm(intptr_t* gpuHandle, char transa, char transb, int m, int n, i
                               float alpha, const float *A, int lda,
                               const float *B, int ldb, float beta,
                               float *C, int ldc) {
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   cublasSgemm_elpa_wrapper_intptr_handle(gpuHandle, transa, transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -229,7 +229,7 @@ void gpublasZgemm(intptr_t* gpuHandle, char transa, char transb, int m, int n, i
                               double _Complex alpha, const double _Complex *A, int lda,
                               const double _Complex *B, int ldb, double _Complex beta,
                               double _Complex *C, int ldc) {
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   cublasZgemm_elpa_wrapper_intptr_handle(gpuHandle, transa, transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -247,7 +247,7 @@ void gpublasCgemm(intptr_t* gpuHandle, char transa, char transb, int m, int n, i
                                float _Complex alpha, const float _Complex *A, int lda,
                                const float _Complex *B, int ldb, float _Complex beta,
                                float _Complex *C, int ldc) {
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
   cublasCgemm_elpa_wrapper_intptr_handle(gpuHandle, transa, transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
 #endif
 #ifdef WITH_AMD_GPU_VERSION

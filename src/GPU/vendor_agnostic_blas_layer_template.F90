@@ -239,7 +239,7 @@
 
       function gpublas_get_version(handle, version) result(success)
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -259,7 +259,7 @@
       logical                               :: success
 
       success = .true.
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
 #ifdef WITH_GPU_STREAMS
       if (use_gpu_vendor == nvidia_gpu) then
         success = cublas_get_version(handle, version)
@@ -290,7 +290,7 @@
 
     function gpublas_set_stream(handle, stream) result(success)
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -311,7 +311,7 @@
 
 
       success = .true.
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
 #ifdef WITH_GPU_STREAMS
       if (use_gpu_vendor == nvidia_gpu) then
         success = cublas_set_stream(handle, stream)
@@ -2745,7 +2745,7 @@
     subroutine gpublas_setPointerMode(gpublasHandle, mode)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -2762,7 +2762,7 @@
       integer(kind=c_intptr_t)          :: gpublasHandle
       integer(kind=c_int)               :: mode
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_setPointerMode(gpublasHandle, mode)
         endif
@@ -2790,7 +2790,7 @@
     subroutine gpublas_Ddot_intptr(gpublasHandle, length, x, incx, y, incy, z)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -2808,7 +2808,7 @@
       integer(kind=c_int)               :: length, incx, incy
       integer(kind=c_intptr_t)          :: x, y, z
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Ddot_intptr(gpublasHandle, length, x, incx, y, incy, z)
         endif
@@ -2836,7 +2836,7 @@
     subroutine gpublas_Ddot_cptr(gpublasHandle, length, x, incx, y, incy, z)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -2854,7 +2854,7 @@
       integer(kind=c_int)               :: length, incx, incy
       type(c_ptr)                       :: x, y, z
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Ddot_cptr(gpublasHandle, length, x, incx, y, incy, z)
         endif
@@ -2882,7 +2882,7 @@
     subroutine gpublas_Sdot_intptr(gpublasHandle, length, x, incx, y, incy, z)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -2900,7 +2900,7 @@
       integer(kind=c_int)               :: length, incx, incy
       integer(kind=c_intptr_t)          :: x, y, z
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Sdot_intptr(gpublasHandle, length, x, incx, y, incy, z)
         endif
@@ -2928,7 +2928,7 @@
     subroutine gpublas_Sdot_cptr(gpublasHandle, length, x, incx, y, incy, z)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -2946,7 +2946,7 @@
       integer(kind=c_int)               :: length, incx, incy
       type(c_ptr)                       :: x, y, z
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Sdot_cptr(gpublasHandle, length, x, incx, y, incy, z)
         endif
@@ -2974,7 +2974,7 @@
     subroutine gpublas_Zdot_intptr(conj, gpublasHandle, length, x, incx, y, incy, z)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -2993,7 +2993,7 @@
       integer(kind=c_int)               :: length, incx, incy
       integer(kind=c_intptr_t)          :: x, y, z
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Zdot_intptr(conj, gpublasHandle, length, x, incx, y, incy, z)
         endif
@@ -3021,7 +3021,7 @@
     subroutine gpublas_Zdot_cptr(conj, gpublasHandle, length, x, incx, y, incy, z)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -3040,7 +3040,7 @@
       integer(kind=c_int)               :: length, incx, incy
       type(c_ptr)                       :: x, y, z
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Zdot_cptr(conj, gpublasHandle, length, x, incx, y, incy, z)
         endif
@@ -3068,7 +3068,7 @@
     subroutine gpublas_Cdot_intptr(conj, gpublasHandle, length, x, incx, y, incy, z)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -3087,7 +3087,7 @@
       integer(kind=c_int)               :: length, incx, incy
       integer(kind=c_intptr_t)          :: x, y, z
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Cdot_intptr(conj, gpublasHandle, length, x, incx, y, incy, z)
         endif
@@ -3115,7 +3115,7 @@
     subroutine gpublas_Cdot_cptr(conj, gpublasHandle, length, x, incx, y, incy, z)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -3134,7 +3134,7 @@
       integer(kind=c_int)               :: length, incx, incy
       type(c_ptr)                       :: x, y, z
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Cdot_cptr(conj, gpublasHandle, length, x, incx, y, incy, z)
         endif
@@ -3162,7 +3162,7 @@
     subroutine gpublas_Dscal_intptr(gpublasHandle, length, alpha, x, incx)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -3181,7 +3181,7 @@
       real(kind=C_DOUBLE)             :: alpha
       integer(kind=c_intptr_t)           :: x
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Dscal_intptr(gpublasHandle, length, alpha, x, incx)
         endif
@@ -3209,7 +3209,7 @@
     subroutine gpublas_Dscal_cptr(gpublasHandle, length, alpha, x, incx)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -3228,7 +3228,7 @@
       real(kind=C_DOUBLE)             :: alpha
       type(c_ptr)                       :: x
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Dscal_cptr(gpublasHandle, length, alpha, x, incx)
         endif
@@ -3256,7 +3256,7 @@
     subroutine gpublas_Sscal_intptr(gpublasHandle, length, alpha, x, incx)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -3275,7 +3275,7 @@
       real(kind=C_FLOAT)              :: alpha
       integer(kind=c_intptr_t)           :: x
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Sscal_intptr(gpublasHandle, length, alpha, x, incx)
         endif
@@ -3303,7 +3303,7 @@
     subroutine gpublas_Sscal_cptr(gpublasHandle, length, alpha, x, incx)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -3322,7 +3322,7 @@
       real(kind=C_FLOAT)              :: alpha
       type(c_ptr)                       :: x
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Sscal_cptr(gpublasHandle, length, alpha, x, incx)
         endif
@@ -3350,7 +3350,7 @@
     subroutine gpublas_Zscal_intptr(gpublasHandle, length, alpha, x, incx)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -3369,7 +3369,7 @@
       complex(kind=C_DOUBLE_COMPLEX)  :: alpha
       integer(kind=c_intptr_t)           :: x
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Zscal_intptr(gpublasHandle, length, alpha, x, incx)
         endif
@@ -3397,7 +3397,7 @@
     subroutine gpublas_Zscal_cptr(gpublasHandle, length, alpha, x, incx)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -3416,7 +3416,7 @@
       complex(kind=C_DOUBLE_COMPLEX)  :: alpha
       type(c_ptr)                       :: x
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Zscal_cptr(gpublasHandle, length, alpha, x, incx)
         endif
@@ -3444,7 +3444,7 @@
     subroutine gpublas_Cscal_intptr(gpublasHandle, length, alpha, x, incx)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -3463,7 +3463,7 @@
       complex(kind=C_FLOAT_COMPLEX)  :: alpha
       integer(kind=c_intptr_t)           :: x
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Cscal_intptr(gpublasHandle, length, alpha, x, incx)
         endif
@@ -3491,7 +3491,7 @@
     subroutine gpublas_Cscal_cptr(gpublasHandle, length, alpha, x, incx)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -3510,7 +3510,7 @@
       complex(kind=C_FLOAT_COMPLEX)  :: alpha
       type(c_ptr)                       :: x
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Cscal_cptr(gpublasHandle, length, alpha, x, incx)
         endif
@@ -3538,7 +3538,7 @@
     subroutine gpublas_Daxpy_intptr(gpublasHandle, length, alpha, x, incx, y, incy)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -3557,7 +3557,7 @@
       real(kind=C_DOUBLE)             :: alpha
       integer(kind=c_intptr_t)           :: x, y
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Daxpy_intptr(gpublasHandle, length, alpha, x, incx, y, incy)
         endif
@@ -3585,7 +3585,7 @@
     subroutine gpublas_Daxpy_cptr(gpublasHandle, length, alpha, x, incx, y, incy)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -3604,7 +3604,7 @@
       real(kind=C_DOUBLE)             :: alpha
       type(c_ptr)                       :: x, y
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Daxpy_cptr(gpublasHandle, length, alpha, x, incx, y, incy)
         endif
@@ -3631,7 +3631,7 @@
     subroutine gpublas_Saxpy_intptr(gpublasHandle, length, alpha, x, incx, y, incy)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -3650,7 +3650,7 @@
       real(kind=C_FLOAT)              :: alpha
       integer(kind=c_intptr_t)           :: x, y
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Saxpy_intptr(gpublasHandle, length, alpha, x, incx, y, incy)
         endif
@@ -3678,7 +3678,7 @@
     subroutine gpublas_Saxpy_cptr(gpublasHandle, length, alpha, x, incx, y, incy)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -3697,7 +3697,7 @@
       real(kind=C_FLOAT)              :: alpha
       type(c_ptr)                       :: x, y
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Saxpy_cptr(gpublasHandle, length, alpha, x, incx, y, incy)
         endif
@@ -3724,7 +3724,7 @@
     subroutine gpublas_Zaxpy_intptr(gpublasHandle, length, alpha, x, incx, y, incy)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -3743,7 +3743,7 @@
       complex(kind=C_DOUBLE_COMPLEX)  :: alpha
       integer(kind=c_intptr_t)           :: x, y
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Zaxpy_intptr(gpublasHandle, length, alpha, x, incx, y, incy)
         endif
@@ -3771,7 +3771,7 @@
     subroutine gpublas_Zaxpy_cptr(gpublasHandle, length, alpha, x, incx, y, incy)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -3790,7 +3790,7 @@
       complex(kind=C_DOUBLE_COMPLEX)  :: alpha
       type(c_ptr)                       :: x, y
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Zaxpy_cptr(gpublasHandle, length, alpha, x, incx, y, incy)
         endif
@@ -3817,7 +3817,7 @@
     subroutine gpublas_Caxpy_intptr(gpublasHandle, length, alpha, x, incx, y, incy)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -3836,7 +3836,7 @@
       complex(kind=C_FLOAT_COMPLEX)  :: alpha
       integer(kind=c_intptr_t)           :: x, y
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Caxpy_intptr(gpublasHandle, length, alpha, x, incx, y, incy)
         endif
@@ -3864,7 +3864,7 @@
     subroutine gpublas_Caxpy_cptr(gpublasHandle, length, alpha, x, incx, y, incy)
 
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -3883,7 +3883,7 @@
       complex(kind=C_FLOAT_COMPLEX)  :: alpha
       type(c_ptr)                       :: x, y
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         if (use_gpu_vendor == nvidia_gpu) then
           call cublas_Caxpy_cptr(gpublasHandle, length, alpha, x, incx, y, incy)
         endif

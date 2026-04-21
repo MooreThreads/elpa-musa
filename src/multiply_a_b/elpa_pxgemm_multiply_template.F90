@@ -74,7 +74,7 @@
 #ifdef WITH_GPU_STREAMS
   use elpa_gpu_util
 #endif
-#if defined(WITH_NVIDIA_GPU_VERSION) && defined(WITH_NVTX)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) && defined(WITH_NVTX)
   use cuda_functions ! for NVTX labels
 #elif defined(WITH_AMD_GPU_VERSION) && defined(WITH_ROCTX)
   use hip_functions  ! for ROCTX labels
@@ -203,7 +203,7 @@
 #if defined(DEVICE_POINTER)
   useGPU = .true.
 #else /* DEVICE_POINTER */
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
   if (.not.(query_gpu_usage(obj, "elpa_pxgemm_multiply", useGPU))) then
     print *,"elpa_pxgemm_multiply: Problem querrying settings for GPU Aborting..."
     stop 1
@@ -2184,7 +2184,7 @@
 #endif /* DEVICE_POINTER */
   endif ! useGPU
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION)
   if (useGPU) then
     successGPU = gpu_get_last_error()
     if (.not. successGPU) then

@@ -45,7 +45,7 @@
 #endif
 
 #ifdef WITH_GPU_STREAMS
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
           success = cuda_stream_create(OBJECT%gpu_setup%my_stream)
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -56,7 +56,7 @@
 #endif
 
           if (.not.(success)) then
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
             print *,"Cannot create cuda stream handle"
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -76,7 +76,7 @@
           ! handle creation
           call OBJECT%timer%start("create_gpublas_handle")
           do thread = 0, maxThreads-1
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
             success = cublas_create(OBJECT%gpu_setup%cublasHandleArray(thread))
             OBJECT%gpu_setup%gpublasHandleArray(thread) = OBJECT%gpu_setup%cublasHandleArray(thread)
 
@@ -102,7 +102,7 @@
             OBJECT%gpu_setup%gpublasHandleArray(thread) = OBJECT%gpu_setup%syclHandleArray(thread)
 #endif
             if (.not.(success)) then
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
               print *,"Cannot create cublas handle"
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -119,7 +119,7 @@
           enddo
           call OBJECT%timer%stop("create_gpublas_handle")
           call OBJECT%timer%start("create_gpusolver_handle")
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
 #ifdef WITH_NVIDIA_CUSOLVER
           do thread=0, maxThreads-1
             success = cusolver_create(handle_tmp)
@@ -173,7 +173,7 @@
 #ifdef WITH_GPU_STREAMS
           ! set stream
           do thread = 0, maxThreads-1
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
             success = cublas_set_stream(OBJECT%gpu_setup%cublasHandleArray(thread), OBJECT%gpu_setup%my_stream)
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -184,7 +184,7 @@
 #endif
 
             if (.not.(success)) then
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
               print *,"Cannot create cublas stream handle"
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -194,7 +194,7 @@
             endif
           enddo
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
 #ifdef WITH_NVIDIA_CUSOLVER
           do thread=0, maxThreads-1
             success = cusolver_set_stream(OBJECT%gpu_setup%cusolverHandleArray(thread), OBJECT%gpu_setup%my_stream)

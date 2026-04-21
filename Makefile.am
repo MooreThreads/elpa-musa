@@ -56,7 +56,6 @@ libelpa@SUFFIX@_private_la_SOURCES = \
   src/elpa1/GPU/mod_tridiag_gpu.F90 \
   src/elpa1/GPU/mod_trans_ev_gpu.F90 \
   src/elpa1/GPU/mod_elpa1_gpu.F90 \
-  src/elpa1/GPU/CUDA/mod_elpa1_cuda.F90 \
   src/elpa1/GPU/ROCm/mod_elpa1_hip.F90 \
   src/elpa1/GPU/SYCL/mod_elpa1_sycl.F90 \
   src/solve_tridi/GPU/mod_merge_systems_gpu.F90 \
@@ -82,6 +81,7 @@ libelpa@SUFFIX@_private_la_SOURCES = \
   src/GPU/ROCm/mod_hip.F90 \
   src/GPU/ROCm/mod_rocsolver.F90 \
   src/GPU/ROCm/mod_rccl.F90 \
+  src/GPU/ROCm/mod_rccl.F90 \
   src/GPU/OpenMP/mod_openmp_offload.F90 \
   src/GPU/OpenMP/mod_openmp_offload_solver.F90 \
   src/GPU/SYCL/mod_sycl.F90 \
@@ -90,7 +90,6 @@ libelpa@SUFFIX@_private_la_SOURCES = \
   src/GPU/SYCL/syclFunctions_template.hpp \
   src/elpa2/mod_elpa2_utils.F90 \
   src/elpa2/GPU/interface_c_gpu_kernel.F90 \
-  src/elpa2/GPU/CUDA/interface_c_cuda_kernel.F90 \
   src/elpa2/GPU/ROCm/interface_c_hip_kernel.F90 \
   src/elpa2/GPU/SYCL/interface_c_sycl_kernel.F90 \
   src/elpa2/mod_pack_unpack_gpu.F90 \
@@ -115,12 +114,10 @@ libelpa@SUFFIX@_private_la_SOURCES = \
   src/solve_tridi/mod_merge_recursive.F90 \
   src/solve_tridi/mod_solve_tridi.F90 \
   src/invert_trm/GPU/mod_invert_trm_gpu.F90 \
-  src/invert_trm/GPU/CUDA/mod_invert_trm_cuda.F90 \
   src/invert_trm/GPU/ROCm/mod_invert_trm_hip.F90 \
   src/invert_trm/GPU/SYCL/mod_invert_trm_sycl.F90 \
   src/cholesky/mod_elpa_cholesky.F90 \
   src/cholesky/GPU/mod_cholesky_gpu.F90 \
-  src/cholesky/GPU/CUDA/mod_cholesky_cuda.F90 \
   src/cholesky/GPU/ROCm/mod_cholesky_hip.F90 \
   src/cholesky/GPU/SYCL/mod_cholesky_sycl.F90 \
   src/invert_trm/mod_elpa_invert_trm.F90 \
@@ -176,6 +173,12 @@ EXTRA_libelpa@SUFFIX@_private_la_DEPENDENCIES = \
   src/GPU/ROCm/rccl_template.F90 \
   src/GPU/ROCm/rocmFunctions_template.h \
   src/GPU/ROCm/rocsolverFunctions_template.h \
+  src/GPU/MUSA/musa_template.F90 \
+  src/GPU/MUSA/musolver_template.F90 \
+  src/GPU/MUSA/mccl_template.F90 \
+  src/GPU/MUSA/musaFunctions_template.h \
+  src/GPU/MUSA/musolverFunctions_template.h \
+  src/GPU/MUSA/mcclFunctions_template.h \
   src/GPU/OpenMP/openmp_offload_template.F90 \
   src/GPU/OpenMP/openmp_offload_solver_template.F90 \
   src/GPU/SYCL/sycl_template.F90 \
@@ -245,6 +248,10 @@ endif
 
 if WITH_NVIDIA_GPU_VERSION
   libelpa@SUFFIX@_private_la_SOURCES += \
+  src/elpa1/GPU/CUDA/mod_elpa1_cuda.F90 \
+  src/elpa2/GPU/CUDA/interface_c_cuda_kernel.F90 \
+  src/invert_trm/GPU/CUDA/mod_invert_trm_cuda.F90 \
+  src/cholesky/GPU/CUDA/mod_cholesky_cuda.F90 \
   src/GPU/CUDA/elpa_index_nvidia_gpu.cu \
   src/GPU/CUDA/elpa_explicit_name_nvidia_gpu.cu \
   src/GPU/CUDA/cudaFunctions.cu \
@@ -298,6 +305,36 @@ endif
 
 if WITH_AMD_RCCL
   libelpa@SUFFIX@_private_la_SOURCES += src/GPU/ROCm/rcclFunctions.hip
+endif
+
+if WITH_MUSA_GPU_VERSION
+  libelpa@SUFFIX@_private_la_SOURCES += \
+  src/elpa1/GPU/MUSA/mod_elpa1_musa.F90 \
+  src/elpa2/GPU/MUSA/interface_c_musa_kernel.F90 \
+  src/invert_trm/GPU/MUSA/mod_invert_trm_musa.F90 \
+  src/cholesky/GPU/MUSA/mod_cholesky_musa.F90 \
+  src/GPU/MUSA/elpa_index_nvidia_gpu.mu \
+  src/GPU/MUSA/elpa_explicit_name_nvidia_gpu.mu \
+  src/GPU/MUSA/musaFunctions.mu \
+  src/GPU/MUSA/muUtils.mu \
+  src/cholesky/GPU/MUSA/elpa_cholesky_musa.mu \
+  src/invert_trm/GPU/MUSA/elpa_invert_trm_musa.mu \
+  src/elpa1/GPU/MUSA/tridiag_musa.mu \
+  src/elpa1/GPU/MUSA/trans_ev_musa.mu \
+  src/elpa1/GPU/MUSA/elpa1_musa.mu \
+  src/elpa2/GPU/MUSA/ev_tridi_band_musa_gpu_real.mu \
+  src/elpa2/GPU/MUSA/ev_tridi_band_musa_gpu_complex.mu \
+  src/solve_tridi/GPU/MUSA/musa_distribute_global_column.mu \
+  src/solve_tridi/GPU/MUSA/musa_merge_systems.mu \
+  src/solve_tridi/GPU/MUSA/musa_solve_tridi_col.mu \
+  src/solve_tridi/GPU/MUSA/musa_solve_tridi_single_problem.mu \
+  src/solve_tridi/GPU/MUSA/musa_transform_columns.mu \
+  src/multiply_a_b/GPU/MUSA/elpa_hermitian_multiply_musa.mu \
+  src/multiply_a_b/GPU/MUSA/elpa_pxgemm_multiply_musa.mu
+endif
+
+if WITH_MUSA_MCCL
+  libelpa@SUFFIX@_private_la_SOURCES += src/GPU/MUSA/mcclFunctions.cpp
 endif
 
 
@@ -758,6 +795,10 @@ endif
 .hip.lo:
 	HIPCC="$(HIPCC)" $(LIBTOOL) --mode=compile --tag=CC $(top_srcdir)/hipcc_wrap $(HIPCCFLAGS) $(LDFLAGS) -I$(top_builddir)/ -I$(top_srcdir)/  -c $< -o $@
 
+# MUSA files
+.mu.lo:
+	MCC="$(MCC)" $(LIBTOOL) --mode=compile --tag=CC $(top_srcdir)/mcc_wrap $(MCCFLAGS) $(LDFLAGS) -I$(top_builddir)/ -I$(top_srcdir)/ -c $< -o $@
+
 # Assembly files
 LTCCASCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=compile $(CCAS) $(AM_CCASFLAGS) \
@@ -1078,6 +1119,7 @@ EXTRA_DIST = \
   manual_cpp \
   nvcc_wrap \
   hipcc_wrap \
+  mcc_wrap \
   remove_xcompiler \
   src/helpers/fortran_blas_interfaces.F90 \
   src/helpers/fortran_scalapack_interfaces.F90 \
@@ -1107,6 +1149,13 @@ EXTRA_DIST = \
   src/GPU/ROCm/rccl_template.F90 \
   src/GPU/ROCm/rcclFunctions_template.h \
   src/GPU/ROCm/hipUtils_template.h \
+  src/GPU/MUSA/musa_template.F90 \
+  src/GPU/MUSA/musolver_template.F90 \
+  src/GPU/MUSA/musaFunctions_template.h \
+  src/GPU/MUSA/musolverFunctions_template.h \
+  src/GPU/MUSA/mccl_template.F90 \
+  src/GPU/MUSA/mcclFunctions_template.h \
+  src/GPU/MUSA/muUtils_template.mu \
   src/GPU/OpenMP/openmp_offload_template.F90 \
   src/GPU/OpenMP/openmp_offload_solver_template.F90 \
   src/GPU/SYCL/sycl_template.F90 \

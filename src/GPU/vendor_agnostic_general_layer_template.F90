@@ -141,7 +141,7 @@
       integer(kind=c_int) :: vendor
       ! default
       vendor = no_gpu
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       vendor = nvidia_gpu
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -181,7 +181,7 @@
     end function
 
     subroutine set_gpu_parameters
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -196,7 +196,7 @@
       use elpa_ccl_gpu
       implicit none
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       if (use_gpu_vendor == nvidia_gpu) then
         cudaMemcpyHostToDevice   = cuda_memcpyHostToDevice()
         gpuMemcpyHostToDevice    = cudaMemcpyHostToDevice
@@ -287,7 +287,7 @@
 
     function gpu_get_last_error() result(success)
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -306,7 +306,7 @@
 
       success = .true.
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       if (use_gpu_vendor == nvidia_gpu) then
         success = cuda_get_last_error()
       endif
@@ -334,7 +334,7 @@
 
     function gpu_stream_synchronize(stream) result(success)
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -354,7 +354,7 @@
 
       success = .true.
       if (present(stream)) then
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
 #ifdef WITH_GPU_STREAMS
         if (use_gpu_vendor == nvidia_gpu) then
           success = cuda_stream_synchronize(stream)
@@ -376,7 +376,7 @@
 #endif
 #endif
       else
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
 #ifdef WITH_GPU_STREAMS
         if (use_gpu_vendor == nvidia_gpu) then
           success = cuda_stream_synchronize()
@@ -410,7 +410,7 @@
 
     function gpu_getdevicecount(n) result(success)
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -428,7 +428,7 @@
       integer(kind=c_int)           :: n
       logical                       :: success
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       success = cuda_getdevicecount(n)
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -443,7 +443,7 @@
 #endif
 
       if (.not.(success)) then
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         print *,"error in cuda_getdevicecount"
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -461,7 +461,7 @@
 
     function gpu_setdevice(n) result(success)
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -479,7 +479,7 @@
       integer(kind=c_int), intent(in) :: n
       logical                         :: success
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       if (use_gpu_vendor == nvidia_gpu) then
         success = cuda_setdevice(n)
       endif
@@ -503,7 +503,7 @@
 
     function gpu_devicesynchronize() result(success)
       use, intrinsic :: iso_c_binding
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       use cuda_functions
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -517,7 +517,7 @@
 
       success = .false.
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       if (use_gpu_vendor == nvidia_gpu) then
         success = cuda_devicesynchronize()
       endif

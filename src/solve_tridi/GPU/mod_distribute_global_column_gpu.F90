@@ -55,7 +55,7 @@ module distribute_global_column_gpu
 
   public
 
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
 
   interface
     subroutine gpu_distribute_global_column_c(dataType, g_col_dev, l_col_dev, &
@@ -63,6 +63,8 @@ module distribute_global_column_gpu
                                               noff_in, noff, nlen, my_prow, np_rows, nblk, debug, my_stream) &
 #if   defined(WITH_NVIDIA_GPU_VERSION)
                                                   bind(C, name="cuda_distribute_global_column_FromC")
+#elif defined(WITH_MUSA_GPU_VERSION)
+                                                  bind(C, name="musa_distribute_global_column_FromC")
 #elif defined(WITH_AMD_GPU_VERSION)
                                                   bind(C, name= "hip_distribute_global_column_FromC")
 #elif defined(WITH_SYCL_GPU_VERSION)
@@ -95,7 +97,7 @@ module distribute_global_column_gpu
       integer(kind=c_int), value         :: g_col_dim1, g_col_dim2, ldq, matrixCols, noff_in, noff, nlen, &
                                             my_prow, np_rows, nblk, debug
       integer(kind=c_intptr_t), value    :: my_stream
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
       call gpu_distribute_global_column_c(dataType, g_col_dev, l_col_dev, &
                                           g_col_dim1, g_col_dim2, ldq, matrixCols, &
                                           noff_in, noff, nlen, my_prow, np_rows, nblk, debug, my_stream)

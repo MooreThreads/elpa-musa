@@ -2666,6 +2666,28 @@ if test x"${need_amd_gpu}" = x"yes"; then
   fi
 fi
 
+dnl MUSA GPU support (Moore Threads)
+need_musa_gpu=no
+AC_MSG_CHECKING(whether MUSA GPU version should be used)
+AC_ARG_ENABLE([musa-gpu],
+              AS_HELP_STRING([--enable-musa-gpu],
+                             [do use MUSA GPU version]),
+              [if test x"$enableval" = x"yes"; then
+                 need_musa_gpu=yes
+               else
+                 need_musa_gpu=no
+               fi],
+              [need_musa_gpu=no])
+AC_MSG_RESULT([${need_musa_gpu}])
+
+if test x"${need_musa_gpu}" = x"yes"; then
+  use_real_musa_gpu=yes
+  use_complex_musa_gpu=yes
+fi
+
+AC_ARG_WITH([musa-path],[AS_HELP_STRING([--with-musa-path=PATH],[prefix where MUSA SDK is installed @<:@default=/usr/local/musa@:>@])],
+            [MUSA_INSTALL_PATH=$withval], [MUSA_INSTALL_PATH=/usr/local/musa])
+
 use_openmp_gpu_backend=no
 use_sycl_gpu_backend=no
 use_intel_gpu=no
@@ -2874,6 +2896,45 @@ fi
 
 #TODO mklGPUBLAS
 
+dnl MUSA GPU compiler and library detection
+if test x"${need_musa_gpu}" = x"yes" ; then
+  AC_ARG_VAR([MCC],[MUSA compiler command. Default: mcc])
+  AC_ARG_VAR([MCCFLAGS],[MUSA compiler flags])
+
+  AC_LANG_PUSH([C])
+  MUSA_CFLAGS="-O2 -I$MUSA_INSTALL_PATH/include"
+  LDFLAGS="$LDFLAGS -L$MUSA_INSTALL_PATH/lib"
+  CFLAGS="$CFLAGS -I$MUSA_INSTALL_PATH/include"
+  MCCFLAGS="$MUSA_CFLAGS $MCCFLAGS"
+  : ${MCC:=$MUSA_INSTALL_PATH/bin/mcc}
+  AC_SUBST(MCC)
+  AC_SUBST(MCCFLAGS)
+
+  dnl check whether mcc compiler is found
+  AC_CHECK_PROG(mcc_found,$MCC,yes,no)
+  if test x"${mcc_found}" = x"no" ; then
+    AC_CHECK_PROG(mcc_found2,mcc,yes,no)
+    if test x"${mcc_found2}" = x"no" ; then
+      AC_MSG_ERROR([mcc not found; try to set --with-musa-path or disable MUSA GPU support])
+    fi
+    MCC=mcc
+  fi
+
+  dnl check whether we find musart (must check first, mublas depends on it)
+  AC_SEARCH_LIBS([musaMalloc],[musart],[have_musart=yes],[have_musart=no])
+  if test x"${have_musart}" = x"no"; then
+    AC_MSG_ERROR([Could not link musart; try to set --with-musa-path or disable MUSA GPU support])
+  fi
+
+  dnl check whether we find mublas
+  AC_SEARCH_LIBS([mublasCreate],[mublas],[have_mublas=yes],[have_mublas=no])
+  if test x"${have_mublas}" = x"no"; then
+    AC_MSG_ERROR([Could not link mublas; try to set --with-musa-path or disable MUSA GPU support])
+  fi
+
+  AC_LANG_POP([C])
+fi
+
 ##########################################################################################
 #
 # GPU memory debugging
@@ -2988,16 +3049,18 @@ AC_ARG_ENABLE([gpu-streams],
             use_hip_streams=yes
             use_gpu_streams=yes
           fi
+          if test x"$enableval" = x"musa"; then
+            use_musa_streams=yes
+            use_gpu_streams=yes
+          fi
           if test x"$enableval" = x"sycl"; then
             use_sycl_streams=yes
             use_gpu_streams=yes
           fi
-          if test x"$enableval" = x"yes"; then
-            AC_MSG_ERROR([Wrong value! Must be either "nvidia", "amd" or "sycl" ])
-          fi
           if test x"$enableval" = x"no"; then
             use_cuda_streams=no
             use_hip_streams=no
+            use_musa_streams=no
             use_sycl_streams=no
             use_gpu_streams=no
           fi
@@ -3015,6 +3078,10 @@ AC_ARG_ENABLE([gpu-streams],
           fi
           if test x"$need_sycl_gpu" = x"yes"; then
             use_sycl_streams=yes
+            use_gpu_streams=yes
+          fi
+          if test x"$need_musa_gpu" = x"yes"; then
+            use_musa_streams=yes
             use_gpu_streams=yes
           fi
 		      #fi
@@ -3137,6 +3204,11 @@ if test x"$use_sycl_streams" = x"yes"; then
   #fi
   AC_DEFINE([WITH_GPU_STREAMS],[1],[enable streams in GPU code])
 fi
+
+if test x"$use_musa_streams" = x"yes"; then
+  AC_DEFINE([WITH_GPU_STREAMS],[1],[enable streams in GPU code])
+fi
+
 if test x"$need_sycl_gpu" = x"yes"; then
   if test x"$use_sycl_streams" = x"no"; then
     echo ""
@@ -3252,6 +3324,24 @@ if test x"$need_amd_gpu" = x"yes"; then
       AC_MSG_ERROR([Could not link rocsolver;  try to set the path to rocsolver.so or disable it: --with-rocsolver=no])
     fi
     AC_DEFINE([WITH_AMD_ROCSOLVER],[1],[enable AMD rocsolver])
+    AC_LANG_POP([C])
+  fi
+fi
+
+dnl MUSA musolver detection
+if test x"$need_musa_gpu" = x"yes"; then
+  with_musolver=yes
+  AC_MSG_CHECKING(whether MUSA musolver library should be used)
+  AC_MSG_RESULT([${with_musolver}])
+  if test x"${with_musolver}" = x"yes"; then
+    AC_LANG_PUSH([C])
+    AC_SEARCH_LIBS([musolverDnCreate],[musolver],[have_musolver=yes],[have_musolver=no])
+    if test x"${have_musolver}" = x"no"; then
+      AC_MSG_WARN([Could not link musolver; musolver support disabled])
+      with_musolver=no
+    else
+      AC_DEFINE([WITH_MUSA_MUSOLVER],[1],[enable MUSA musolver])
+    fi
     AC_LANG_POP([C])
   fi
 fi
@@ -3405,6 +3495,26 @@ fi
 AC_SUBST([ELPA_2STAGE_COMPLEX_AMD_GPU_COMPILED])
 AC_SUBST([ELPA_2STAGE_REAL_AMD_GPU_COMPILED])
 
+dnl MUSA GPU version conditional
+if test x"$use_real_musa_gpu" = x"yes" -o x"$use_complex_musa_gpu" = x"yes" ; then
+  use_gpu=yes
+fi
+
+AM_CONDITIONAL([WITH_MUSA_GPU_VERSION],[test x"$use_real_musa_gpu" = x"yes" -o x"$use_complex_musa_gpu" = x"yes"])
+if test x"$use_real_musa_gpu" = x"yes" -o x"$use_complex_musa_gpu" = x"yes" ; then
+  AC_DEFINE([WITH_MUSA_GPU_VERSION],[1],[enable MUSA GPU support])
+  AC_DEFINE([WITH_MUSA_GPU_KERNEL],[1],[MUSA GPU kernel should be build])
+  AC_DEFINE_SUBST(CURRENT_WITH_MUSA_GPU_VERSION, 1, "enable use MUSA GPU in C-headers")
+  ELPA_2STAGE_COMPLEX_MUSA_GPU_COMPILED=1
+  ELPA_2STAGE_REAL_MUSA_GPU_COMPILED=1
+else
+  AC_DEFINE_SUBST(CURRENT_WITH_MUSA_GPU_VERSION, 0, "disable use MUSA GPU in C-headers")
+  ELPA_2STAGE_COMPLEX_MUSA_GPU_COMPILED=0
+  ELPA_2STAGE_REAL_MUSA_GPU_COMPILED=0
+fi
+AC_SUBST([ELPA_2STAGE_COMPLEX_MUSA_GPU_COMPILED])
+AC_SUBST([ELPA_2STAGE_REAL_MUSA_GPU_COMPILED])
+
 #to be done
 #AM_CONDITIONAL([WITH_INTEL_GPU_VERSION],[test x"$use_real_intel_gpu2" = x"yes" -o x"$use_complex_intel_gpu2" = x"yes"])
 #if test x"$use_real_intel_gpu" = x"yes" -o x"$use_complex_intel_gpu" = x"yes" ; then
@@ -3463,10 +3573,11 @@ use_gpu_ccl=no
 use_nvidia_nccl=no
 use_amd_rccl=no
 use_oneccl=no
+use_musa_mccl=no
 AC_MSG_CHECKING(whether GPU collective communications library should be used)
 AC_ARG_ENABLE([gpu-ccl],
-               [AS_HELP_STRING([--enable-gpu-ccl=[[nccl|rccl|oneccl]]],
-                               [do use Nvidia NCCL, AMD RCCL or oneCCL communications library, respectively])],
+               [AS_HELP_STRING([--enable-gpu-ccl=[[nccl|rccl|mccl|oneccl]]],
+                               [do use Nvidia NCCL, AMD RCCL, MUSA MCCL or oneCCL communications library, respectively])],
                                [if test x"$enableval" = x"nccl"; then
                                   use_nvidia_nccl=yes
                                   use_gpu_ccl=yes
@@ -3475,16 +3586,21 @@ AC_ARG_ENABLE([gpu-ccl],
                                   use_amd_rccl=yes
                                   use_gpu_ccl=yes
                                 fi
+                                if test x"$enableval" = x"mccl"; then
+                                  use_musa_mccl=yes
+                                  use_gpu_ccl=yes
+                                fi
                                 if test x"$enableval" = x"oneccl"; then
                                   use_oneccl=yes
                                   use_gpu_ccl=yes
                                 fi
                                 if test x"$enableval" = x"yes"; then
-                                  AC_MSG_ERROR([Wrong value! Must be either "nccl", "rccl" or "oneccl" ])
+                                  AC_MSG_ERROR([Wrong value! Must be either "nccl", "rccl", "mccl" or "oneccl" ])
                                 fi
                                 if test x"$enableval" = x"no"; then
                                   use_cuda_nccl=no
                                   use_amd_rccl=no
+                                  use_musa_mccl=no
                                   use_oneccl=no
                                   use_gpu_ccl=no
                                 fi
@@ -3572,6 +3688,18 @@ if test x"$use_amd_rccl" = x"yes"; then
 fi
 AM_CONDITIONAL([WITH_AMD_RCCL],[test x"$use_amd_rccl" = x"yes"])
 
+if test x"$use_musa_mccl" = x"yes"; then
+  AC_DEFINE([WITH_MUSA_MCCL],[1],[enable usage of MUSA MCCL])
+  AC_LANG_PUSH([C])
+  LDFLAGS="$LDFLAGS -L$MUSA_INSTALL_PATH/lib"
+  AC_SEARCH_LIBS([mcclGetVersion],[mccl],[have_mccl=yes],[have_mccl=no])
+  if test x"${have_mccl}" = x"no"; then
+    AC_MSG_WARN([Could not link MCCL; MCCL support disabled])
+  fi
+  AC_LANG_POP([C])
+fi
+AM_CONDITIONAL([WITH_MUSA_MCCL],[test x"$use_musa_mccl" = x"yes"])
+
 if test x"$use_oneccl" = x"yes"; then
   if test x"$use_sycl_streams" = x"no"; then
     AC_MSG_ERROR([If --enable-gpu-ccl=oneccl is set, you must also use --enable-gpu-streams=sycl])
@@ -3632,6 +3760,10 @@ AM_CONDITIONAL([WITH_ONEAPI_ONECCL],[test x"$use_oneccl" = x"yes"])
 
 if test x"${need_nvidia_gpu}" = x"yes" ; then
   NVCC="\$(top_srcdir)/manual_cpp $NVCC"
+fi
+
+if test x"${need_musa_gpu}" = x"yes" ; then
+  MCC="\$(top_srcdir)/manual_cpp $MCC"
 fi
 
 #if test x"${need_amd_gpu}" = x"yes" ; then

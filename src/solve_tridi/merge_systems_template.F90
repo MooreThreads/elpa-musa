@@ -87,7 +87,7 @@
       use solve_secular_equation
       use elpa_ccl_gpu
       use merge_systems_gpu
-#if defined(WITH_NVIDIA_GPU_VERSION) && defined(WITH_NVTX)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) && defined(WITH_NVTX)
       use cuda_functions ! for NVTX labels
 #elif defined(WITH_AMD_GPU_VERSION) && defined(WITH_ROCTX)
       use hip_functions  ! for ROCTX labels

@@ -114,7 +114,7 @@ subroutine trans_ev_cpu_&
   use elpa_gpu
   use elpa_gpu_util
   use trans_ev_gpu
-#if defined(WITH_NVIDIA_GPU_VERSION) && defined(WITH_NVTX)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) && defined(WITH_NVTX)
   use cuda_functions ! for NVTX labels
 #elif defined(WITH_AMD_GPU_VERSION) && defined(WITH_ROCTX) 
   use hip_functions  ! for ROCTX labels
@@ -950,7 +950,7 @@ subroutine trans_ev_cpu_&
   endif
 
   if (useGPU) then
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
     !if (gpu_vendor() /= OPENMP_OFFLOAD_GPU .and. gpu_vendor() /= SYCL_GPU) then
     !  successGPU = gpu_host_unregister(int(loc(q_mat),kind=c_intptr_t))
     !  check_host_unregister_gpu("trans_ev: q_mat", successGPU)

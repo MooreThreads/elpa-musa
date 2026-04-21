@@ -60,7 +60,7 @@ module gpu_c_kernel
       integer(kind=c_intptr_t) :: hh_tau ,hh
       integer(kind=c_intptr_t) :: my_stream
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       call launch_compute_hh_trafo_c_cuda_kernel_real_double(q, hh, hh_tau, nev, nb, ldq, ncols, my_stream)
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -101,7 +101,7 @@ module gpu_c_kernel
       integer(kind=c_intptr_t) :: hh_tau ,hh
       integer(kind=c_intptr_t) :: my_stream
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       call launch_compute_hh_trafo_c_cuda_kernel_real_single(q, hh, hh_tau, nev, nb, ldq, ncols, my_stream)
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -143,7 +143,7 @@ module gpu_c_kernel
       integer(kind=c_intptr_t) :: hh_tau ,hh
       integer(kind=c_intptr_t) :: my_stream
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       call launch_compute_hh_trafo_c_cuda_kernel_complex_double(q, hh, hh_tau, nev, nb, ldq, ncols, my_stream)
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -185,7 +185,7 @@ module gpu_c_kernel
       integer(kind=c_intptr_t) :: hh_tau ,hh
       integer(kind=c_intptr_t) :: my_stream
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       call launch_compute_hh_trafo_c_cuda_kernel_complex_single(q, hh, hh_tau, nev, nb, ldq, ncols, my_stream)
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -230,7 +230,7 @@ module gpu_c_kernel
       integer(kind=c_intptr_t) :: a_dev, row_group_dev
       integer(kind=c_intptr_t) :: my_stream
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       call launch_my_unpack_c_cuda_kernel_real_double(row_count, n_offset, max_idx,stripe_width, a_dim2, stripe_count, &
            l_nev,row_group_dev, a_dev, my_stream)
 #endif
@@ -254,7 +254,7 @@ module gpu_c_kernel
       integer(kind=c_intptr_t) :: a_dev, row_group_dev
       integer(kind=c_intptr_t) :: my_stream
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       call launch_my_unpack_c_cuda_kernel_real_single(row_count, n_offset, max_idx,stripe_width, a_dim2, stripe_count, &
            l_nev,row_group_dev, a_dev, my_stream)
 #endif
@@ -278,7 +278,7 @@ module gpu_c_kernel
       integer(kind=c_intptr_t) :: row_group_dev
       integer(kind=c_intptr_t) :: my_stream
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       call launch_my_pack_c_cuda_kernel_real_double(row_count, n_offset, max_idx,stripe_width, a_dim2, stripe_count, l_nev, a_dev, &
            row_group_dev, my_stream)
 #endif
@@ -302,7 +302,7 @@ module gpu_c_kernel
       integer(kind=c_intptr_t) :: row_group_dev
       integer(kind=c_intptr_t) :: my_stream
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       call launch_my_pack_c_cuda_kernel_real_single(row_count, n_offset, max_idx,stripe_width, a_dim2, stripe_count, l_nev, a_dev, &
            row_group_dev, my_stream)
 #endif
@@ -326,7 +326,7 @@ module gpu_c_kernel
       integer(kind=c_int)      :: is_zero
       integer(kind=c_intptr_t) :: my_stream
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       call launch_extract_hh_tau_c_cuda_kernel_real_double(hh, hh_tau, nb, n, is_zero, my_stream)
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -347,7 +347,7 @@ module gpu_c_kernel
       integer(kind=c_int)      :: is_zero
       integer(kind=c_intptr_t) :: my_stream
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       call launch_extract_hh_tau_c_cuda_kernel_real_single(hh, hh_tau, nb, n, is_zero, my_stream)
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -368,7 +368,7 @@ module gpu_c_kernel
       integer(kind=c_intptr_t) :: a_dev, row_group_dev
       integer(kind=c_intptr_t) :: my_stream
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       call launch_my_unpack_c_cuda_kernel_complex_double(row_count, n_offset, max_idx, stripe_width, a_dim2, stripe_count, l_nev, &
            row_group_dev, a_dev, my_stream)
 #endif
@@ -392,7 +392,7 @@ module gpu_c_kernel
       integer(kind=c_intptr_t) :: a_dev, row_group_dev
       integer(kind=c_intptr_t) :: my_stream
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       call launch_my_unpack_c_cuda_kernel_complex_single(row_count, n_offset, max_idx, stripe_width, a_dim2, stripe_count, l_nev, &
            row_group_dev, a_dev, my_stream)
 #endif
@@ -416,7 +416,7 @@ module gpu_c_kernel
       integer(kind=c_intptr_t) :: row_group_dev
       integer(kind=c_intptr_t) :: my_stream
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       call launch_my_pack_c_cuda_kernel_complex_double(row_count, n_offset, max_idx,stripe_width,a_dim2, stripe_count, l_nev, &
               a_dev, row_group_dev, my_stream)
 #endif
@@ -440,7 +440,7 @@ module gpu_c_kernel
       integer(kind=c_intptr_t) :: row_group_dev
       integer(kind=c_intptr_t) :: my_stream
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       call launch_my_pack_c_cuda_kernel_complex_single(row_count, n_offset, max_idx,stripe_width,a_dim2, stripe_count, &
                                                        l_nev, a_dev, row_group_dev, my_stream)
 #endif
@@ -464,7 +464,7 @@ module gpu_c_kernel
       integer(kind=c_int)      :: is_zero
       integer(kind=c_intptr_t) :: my_stream
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
       call launch_extract_hh_tau_c_cuda_kernel_complex_double(hh, hh_tau, nb, n, is_zero, my_stream)
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -485,7 +485,7 @@ module gpu_c_kernel
       integer(kind=c_int)      :: is_zero
       integer(kind=c_intptr_t) :: my_stream
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
 call launch_extract_hh_tau_c_cuda_kernel_complex_single(hh, hh_tau, nb, n, is_zero, my_stream)
 #endif
 #ifdef WITH_AMD_GPU_VERSION

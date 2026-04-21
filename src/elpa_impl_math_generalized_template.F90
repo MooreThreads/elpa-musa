@@ -85,7 +85,7 @@ subroutine elpa_generalized_eigenvectors_a_h_a_&
   use elpa1_impl
   use elpa2_impl
   use elpa_utilities, only : error_unit
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
   use elpa_gpu
   use elpa_gpu_util
   use mod_query_gpu_usage
@@ -114,7 +114,7 @@ subroutine elpa_generalized_eigenvectors_a_h_a_&
   type(c_ptr)                :: aDev, bDev, evDev, qDev
   integer(kind=c_intptr_t)   :: my_stream
   integer(kind=c_intptr_t)   :: num
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
   integer(kind=c_intptr_t), parameter  :: size_of_datatype      = size_of_&
                                                                 &PRECISION&
                                                                 &_&
@@ -138,7 +138,7 @@ subroutine elpa_generalized_eigenvectors_a_h_a_&
   wantDebug = (debug == 1)
 
   useGPU = .false.
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
   if (.not.(query_gpu_usage(self, "elpa_generalized_eigenvectors_a_h_a", useGPU))) then
     write(error_unit,*) "elpa_generalized_eigenvectors_a_h_a: Problem getting options for GPU. Aborting..."
     return
@@ -466,7 +466,7 @@ subroutine elpa_generalized_eigenvectors_d_ptr_&
 
 ! PETERDEBUG: new: check whether gpu keywords are set and check number of available GPUs
   useGPU = .false.
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
   if (.not.(query_gpu_usage(self, "elpa_generalized_eigenvectors_d_ptr", useGPU))) then
     write(error_unit,*) "elpa_generalized_eigenvectors_d_ptr: Problem getting options for GPU. Aborting..."
     return
@@ -662,7 +662,7 @@ subroutine elpa_generalized_eigenvalues_a_h_a_&
   use elpa1_impl
   use elpa2_impl
   use elpa_utilities, only : error_unit, check_alloc, check_allocate_f
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
   use elpa_gpu
   use elpa_gpu_util
   use mod_query_gpu_usage
@@ -693,7 +693,7 @@ subroutine elpa_generalized_eigenvalues_a_h_a_&
   type(c_ptr)                :: aDev, bDev, evDev
   integer(kind=c_intptr_t)   :: my_stream
   integer(kind=c_intptr_t)   :: num
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
   integer(kind=c_intptr_t), parameter  :: size_of_datatype      = size_of_&
                                                                 &PRECISION&
                                                                 &_&
@@ -717,7 +717,7 @@ subroutine elpa_generalized_eigenvalues_a_h_a_&
   wantDebug = (debug == 1)
 
   useGPU = .false.
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
     if (.not.(query_gpu_usage(self, "elpa_generalized_eigenvectors_d_ptr", useGPU))) then
       write(error_unit,*) "elpa_generalized_eigenvectors_d_ptr: Problem getting options for GPU. Aborting..."
       return
@@ -1022,7 +1022,7 @@ subroutine elpa_generalized_eigenvalues_d_ptr_&
 
 ! PETERDEBUG: new: check whether gpu keywords are set and check number of available GPUs
   useGPU = .false.
-#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_AMD_GPU_VERSION) || defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) || defined(WITH_SYCL_GPU_VERSION)
   if (.not.(query_gpu_usage(self, "elpa_generalized_eigenvalues_d_ptr", useGPU))) then
     write(error_unit,*) "elpa_generalized_eigenvalues_d_ptr: Problem getting options for GPU. Aborting..."
     error_l = ELPA_ERROR

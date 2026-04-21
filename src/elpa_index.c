@@ -131,7 +131,7 @@ static int min_tile_size_cardinality(elpa_index_t index);
 static int min_tile_size_enumerate(elpa_index_t index, int i);
 static int min_tile_size_is_valid(elpa_index_t index, int n, int new_value);
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
 int nvidia_gpu_count();
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -337,7 +337,7 @@ static const elpa_index_int_entry_t int_entries[] = {
         INT_ENTRY("nbc_all_elpa2_main", "Use non blocking collectives for comm_world in elpa2_main", 0, ELPA_AUTOTUNE_NOT_TUNABLE, ELPA2_AUTOTUNE_MAIN, ELPA_AUTOTUNE_DOMAIN_ANY, ELPA_AUTOTUNE_PART_ELPA2, \
                         cardinality_bool, enumerate_identity, nbc_elpa2_is_valid, NULL, PRINT_YES),
 	// 2. GPU usage
-#if defined(WITH_NVIDIA_GPU_VERSION)
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         INT_ENTRY("gpu", "Use Nvidia GPU acceleration", 0, ELPA_AUTOTUNE_NOT_TUNABLE, ELPA_AUTOTUNE_NOT_TUNABLE, ELPA_AUTOTUNE_DOMAIN_ANY, ELPA_AUTOTUNE_PART_ANY, \
                          cardinality_bool, enumerate_identity, nvidia_gpu_is_valid, NULL, PRINT_YES),
         INT_ENTRY("nvidia-gpu", "Use Nvidia GPU acceleration", 0, ELPA_AUTOTUNE_GPU, ELPA_AUTOTUNE_GPU, ELPA_AUTOTUNE_DOMAIN_ANY, ELPA_AUTOTUNE_PART_ANY, \
@@ -953,7 +953,7 @@ static int real_kernel_is_valid(elpa_index_t index, int n, int new_value) {
 #ifdef WITH_SYCL_GPU_VERSION
                 ELPA_FOR_ALL_2STAGE_REAL_KERNELS(VALID_CASE_3, REAL_INTEL_GPU_KERNEL_ONLY_WHEN_GPU_IS_ACTIVE)
 #endif
-#if !defined(WITH_NVIDIA_GPU_VERSION) && !defined(WITH_AMD_GPU_VERSION) && !defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) && !defined(WITH_SYCL_GPU_VERSION)
+#if !defined(WITH_NVIDIA_GPU_VERSION) && !defined(WITH_AMD_GPU_VERSION) && !defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) && !defined(WITH_SYCL_GPU_VERSION) && !defined(WITH_MUSA_GPU_VERSION) && !defined(WITH_MUSA_GPU_VERSION)
                 ELPA_FOR_ALL_2STAGE_REAL_KERNELS(VALID_CASE_3, REAL_NVIDIA_GPU_KERNEL_ONLY_WHEN_GPU_IS_ACTIVE)
 #endif
 		// intel missing
@@ -1016,7 +1016,7 @@ static int complex_kernel_is_valid(elpa_index_t index, int n, int new_value) {
 #ifdef WITH_SYCL_GPU_VERSION
                 ELPA_FOR_ALL_2STAGE_COMPLEX_KERNELS(VALID_CASE_3, COMPLEX_INTEL_GPU_KERNEL_ONLY_WHEN_GPU_IS_ACTIVE)
 #endif
-#if !defined(WITH_NVIDIA_GPU_VERSION) && !defined(WITH_AMD_GPU_VERSION) && !defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) && !defined(WITH_SYCL_GPU_VERSION)
+#if !defined(WITH_NVIDIA_GPU_VERSION) && !defined(WITH_AMD_GPU_VERSION) && !defined(WITH_OPENMP_OFFLOAD_GPU_VERSION) && !defined(WITH_SYCL_GPU_VERSION) && !defined(WITH_MUSA_GPU_VERSION) && !defined(WITH_MUSA_GPU_VERSION)
                 ELPA_FOR_ALL_2STAGE_COMPLEX_KERNELS(VALID_CASE_3, COMPLEX_NVIDIA_GPU_KERNEL_ONLY_WHEN_GPU_IS_ACTIVE)
 #endif
 		// intel missing
@@ -1080,7 +1080,7 @@ static int output_build_config_is_valid(elpa_index_t index, int n, int new_value
 }
 
 static int nvidia_gpu_is_valid(elpa_index_t index, int n, int new_value) {
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
         return new_value == 0 || new_value == 1;
 #else
         return new_value == 0;
@@ -1399,7 +1399,7 @@ static int max_stored_rows_is_valid(elpa_index_t index, int n, int new_value) {
 }
 
 static int use_gpu_id_cardinality(elpa_index_t index) {
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
 	int count;
 	count = nvidia_gpu_count();
         if (count == -1000) {
@@ -1444,7 +1444,7 @@ static int use_gpu_id_enumerate(elpa_index_t index, int i) {
 }
 
 static int use_gpu_id_is_valid(elpa_index_t index, int n, int new_value) {
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
 	int count;
 	count = nvidia_gpu_count();
         if (count == -1000) {

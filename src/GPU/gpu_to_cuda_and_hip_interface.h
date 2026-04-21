@@ -114,6 +114,29 @@
 
 //_________________________________________________________________________________________________
 
+#ifdef WITH_MUSA_GPU_VERSION
+#define gpuDeviceSynchronize musaDeviceSynchronize
+#define gpuStreamSynchronize musaStreamSynchronize
+#define gpuStream_t musaStream_t
+#define gpuGetLastError musaGetLastError
+#define gpuGetErrorString musaGetErrorString
+#define gpuError_t musaError_t
+#define gpuSuccess musaSuccess
+#define gpuDoubleComplex muDoubleComplex
+#define gpuFloatComplex  muFloatComplex
+#define make_gpuDoubleComplex make_muDoubleComplex
+#define make_gpuFloatComplex make_muFloatComplex
+#define gpuPointerAttributes musaPointerAttributes
+#define gpuPointerGetAttributes musaPointerGetAttributes
+#define gpuMemoryTypeHost musaMemoryTypeHost
+#define gpuMemoryTypeDevice musaMemoryTypeDevice
+#define MAX_THREADS_PER_BLOCK 1024
+#define MIN_THREADS_PER_BLOCK 32
+#define ELPA_GPU musa
+#endif
+
+//_________________________________________________________________________________________________
+
 #ifdef WITH_SYCL_GPU_VERSION
 #define gpuDeviceSynchronize syclDeviceSynchronize
 #define gpuStream_t QueueData*

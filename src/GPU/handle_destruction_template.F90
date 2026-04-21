@@ -46,7 +46,7 @@
 
 #ifdef WITH_GPU_STREAMS
           success = .true.
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
           success = cuda_stream_destroy(self%gpu_setup%my_stream)
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -56,7 +56,7 @@
           success = sycl_stream_destroy(self%gpu_setup%my_stream)
 #endif
           if (.not.(success)) then
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
             print *,"ELPA: Cannot destroy cuda stream handle"
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -73,7 +73,7 @@
           ! handle destruction
           do thread = 0, maxThreads-1
             success = .true.
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
             success = cublas_destroy(self%gpu_setup%cublasHandleArray(thread))
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -86,7 +86,7 @@
             success = syclblas_destroy(self%gpu_setup%syclHandleArray(thread))
 #endif
             if (.not.(success)) then
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
               print *,"Cannot destroy cublas handle"
 #endif
 #ifdef WITH_AMD_GPU_VERSION
@@ -103,7 +103,7 @@
           enddo
           
 
-#ifdef WITH_NVIDIA_GPU_VERSION
+#if defined(WITH_NVIDIA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION) || defined(WITH_MUSA_GPU_VERSION)
 #ifdef WITH_NVIDIA_CUSOLVER
           do thread=0, maxThreads-1
             success = cusolver_destroy(self%gpu_setup%cusolverHandleArray(thread))
