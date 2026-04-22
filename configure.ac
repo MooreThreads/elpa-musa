@@ -3332,7 +3332,6 @@ dnl MUSA musolver detection
 AC_ARG_ENABLE([musa-musolver],
   AS_HELP_STRING([--disable-musa-musolver],[Disable MUSA musolver support]),
   [with_musolver=$enableval],[with_musolver=yes])
-
 if test x"$need_musa_gpu" = x"yes"; then
   AC_MSG_CHECKING(whether MUSA musolver library should be used)
   AC_MSG_RESULT([${with_musolver}])

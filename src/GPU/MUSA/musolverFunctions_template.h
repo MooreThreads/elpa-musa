@@ -55,14 +55,14 @@
 
 extern "C" {
 
-cudaDataType getCudaDataType(char dataType) {
-  if      (dataType=='D') return CUDA_R_64F;
-  else if (dataType=='S') return CUDA_R_32F;
-  else if (dataType=='Z') return CUDA_C_64F;
-  else if (dataType=='C') return CUDA_C_32F;
+musaDataType getCudaDataType(char dataType) {
+  if      (dataType=='D') return MUSA_R_64F;
+  else if (dataType=='S') return MUSA_R_32F;
+  else if (dataType=='Z') return MUSA_C_64F;
+  else if (dataType=='C') return MUSA_C_32F;
   else {
     errormessage("Error in getCudaDataType: unknown data type, %s\n", "aborting");
-    return CUDA_R_64F;
+    return MUSA_R_64F;
   }
 }
 
@@ -71,32 +71,32 @@ void elpa_cusolverPrintError(musolverStatus_t status){
     case MUSOLVER_STATUS_SUCCESS:
         printf("cusolverStatus=MUSOLVER_STATUS_SUCCESS\n");
         break;
-    case CUSOLVER_STATUS_NOT_INITIALIZED:
-        printf("cusolverStatus=CUSOLVER_STATUS_NOT_INITIALIZED\n");
+    case MUSOLVER_STATUS_NOT_INITIALIZED:
+        printf("cusolverStatus=MUSOLVER_STATUS_NOT_INITIALIZED\n");
         break;
-    case CUSOLVER_STATUS_ALLOC_FAILED:
-        printf("cusolverStatus=CUSOLVER_STATUS_ALLOC_FAILED\n");
+    case MUSOLVER_STATUS_ALLOC_FAILED:
+        printf("cusolverStatus=MUSOLVER_STATUS_ALLOC_FAILED\n");
         break;
-    case CUSOLVER_STATUS_INVALID_VALUE:
-        printf("cusolverStatus=CUSOLVER_STATUS_INVALID_VALUE\n");
+    case MUSOLVER_STATUS_INVALID_VALUE:
+        printf("cusolverStatus=MUSOLVER_STATUS_INVALID_VALUE\n");
         break;
-    case CUSOLVER_STATUS_ARCH_MISMATCH:
-        printf("cusolverStatus=CUSOLVER_STATUS_ARCH_MISMATCH\n");
+    case MUSOLVER_STATUS_ARCH_MISMATCH:
+        printf("cusolverStatus=MUSOLVER_STATUS_ARCH_MISMATCH\n");
         break;
-    case CUSOLVER_STATUS_MAPPING_ERROR:
-        printf("cusolverStatus=CUSOLVER_STATUS_MAPPING_ERROR\n");
+    case MUSOLVER_STATUS_MAPPING_ERROR:
+        printf("cusolverStatus=MUSOLVER_STATUS_MAPPING_ERROR\n");
         break;
-    case CUSOLVER_STATUS_EXECUTION_FAILED:
-        printf("cusolverStatus=CUSOLVER_STATUS_EXECUTION_FAILED\n");
+    case MUSOLVER_STATUS_EXECUTION_FAILED:
+        printf("cusolverStatus=MUSOLVER_STATUS_EXECUTION_FAILED\n");
         break;
-    case CUSOLVER_STATUS_INTERNAL_ERROR:
-        printf("cusolverStatus=CUSOLVER_STATUS_INTERNAL_ERROR\n");
+    case MUSOLVER_STATUS_INTERNAL_ERROR:
+        printf("cusolverStatus=MUSOLVER_STATUS_INTERNAL_ERROR\n");
         break;
-    case CUSOLVER_STATUS_MATRIX_TYPE_NOT_SUPPORTED:
-        printf("cusolverStatus=CUSOLVER_STATUS_MATRIX_TYPE_NOT_SUPPORTED\n");
+    case MUSOLVER_STATUS_MATRIX_TYPE_NOT_SUPPORTED:
+        printf("cusolverStatus=MUSOLVER_STATUS_MATRIX_TYPE_NOT_SUPPORTED\n");
         break;
-    case CUSOLVER_STATUS_NOT_SUPPORTED:
-        printf("cusolverStatus=CUSOLVER_STATUS_NOT_SUPPORTED\n");
+    case MUSOLVER_STATUS_NOT_SUPPORTED:
+        printf("cusolverStatus=MUSOLVER_STATUS_NOT_SUPPORTED\n");
         break;
     default:
         printf("Unknown cusolverStatus status: %d\n", status);
@@ -106,9 +106,11 @@ void elpa_cusolverPrintError(musolverStatus_t status){
 int cusolverGetVersionFromC() {
 
   int major=0, minor=0, patch=0;
-  cusolverGetProperty(MAJOR_VERSION, &major);
-  cusolverGetProperty(MINOR_VERSION, &minor);
-  cusolverGetProperty(PATCH_LEVEL,   &patch);
+#ifdef MUSOLVER_VERSION_MAJOR
+  major = MUSOLVER_VERSION_MAJOR;
+  minor = MUSOLVER_VERSION_MINOR;
+  patch = MUSOLVER_VERSION_PATCH;
+#endif
 
   return major*10000 + minor*100 + patch;
 }
@@ -119,7 +121,7 @@ int cusolverSetStreamFromC(musolverDnHandle_t cusolver_handle, musaStream_t stre
   if (status == MUSOLVER_STATUS_SUCCESS) {
     return 1;
   }
-  else if (status == CUSOLVER_STATUS_NOT_INITIALIZED) {
+  else if (status == MUSOLVER_STATUS_NOT_INITIALIZED) {
     errormessage("Error in musolverDnSetStream: %s\n", "the CUDA Runtime initialization failed");
     return 0;
   }
@@ -141,11 +143,11 @@ int cusolverCreateFromC(musolverDnHandle_t *cusolver_handle) {
 //       printf("all OK\n");
     return 1;
   }
-  else if (status == CUSOLVER_STATUS_NOT_INITIALIZED) {
+  else if (status == MUSOLVER_STATUS_NOT_INITIALIZED) {
     errormessage("Error in cusolverCreate: %s\n", "the CUDA Runtime initialization failed");
     return 0;
   }
-  else if (status == CUSOLVER_STATUS_ALLOC_FAILED) {
+  else if (status == MUSOLVER_STATUS_ALLOC_FAILED) {
     errormessage("Error in cusolverCreate: %s\n", "the resources could not be allocated");
     return 0;
   }
@@ -164,7 +166,7 @@ int cusolverDestroyFromC(musolverDnHandle_t cusolver_handle) {
     //free((void*) *cusolver_handle);
     return 1;
   }
-  else if (status == CUSOLVER_STATUS_NOT_INITIALIZED) {
+  else if (status == MUSOLVER_STATUS_NOT_INITIALIZED) {
     errormessage("Error in cusolverDestroy: %s\n", "the library has not been initialized");
     return 0;
   }
@@ -175,289 +177,110 @@ int cusolverDestroyFromC(musolverDnHandle_t cusolver_handle) {
 }
 
 //_________________________________________________________________________________________________
-// cusolver?trtri
+// musolver?trtri
 
 void cusolverDtrtri_elpa_wrapper (musolverDnHandle_t musaHandle, char uplo, char diag, int64_t n, double *A, int64_t lda, int *info) {
-  musolverStatus_t status;
-
-  int info_gpu = 0;
-
-  int *devInfo = NULL; 
+  int info_dev = 0;
+  int *devInfo = NULL;
   musaError_t muerr = musaMalloc((void**)&devInfo, sizeof(int));
   if (muerr != musaSuccess) {
-    errormessage("Error in cusolver_Dtrtri devInfo: %s\n",musaGetErrorString(muerr));
-  }
-#ifdef DEBUG_MUSA
-  printf("CUDA Malloc, cusolverDtrtri_elpa_wrapper, pointer address: %p, size: %d \n", (void*)devInfo, sizeof(int));
-#endif
-
-  double *d_work = NULL, *h_work=NULL;
-  size_t d_lwork = 0;
-  size_t h_lwork = 0;
-  //status = cusolverDnXtrtri_bufferSize(*((musolverDnHandle_t*)handle), fill_mode_new_api(uplo), diag_type_new_api(diag), n, CUDA_R_64F, A, lda, &d_lwork, &h_lwork);
-  status = cusolverDnXtrtri_bufferSize(musaHandle, fill_mode_new_api(uplo), diag_type_new_api(diag), n, CUDA_R_64F, A, lda, &d_lwork, &h_lwork);
-  if (status != MUSOLVER_STATUS_SUCCESS) {
-    errormessage("Error in cusolverDnDtrtri_buffer_size %s \n","aborting");
+    errormessage("Error in musolver_Dtrtri devInfo: %s\n",musaGetErrorString(muerr));
   }
 
-  if (h_lwork != 0) {
-    errormessage("Error in cusolver_Dtrtri host work array needed of size=: %d\n",h_lwork);
-  }
-
-#if CUSOLVER_VERSION < 11601
-  // temporary workaround for cusolverDnXtrtri_bufferSize bug
-  // https://docs.nvidia.com/cuda/archive/12.4.0/cuda-toolkit-release-notes/index.html#cusolver-release-12-4
-  d_lwork *= 8;
-
-  // the problem is fixed in CUDA 12.4.1 (cuSOLVER 11.6.1.9)
-#endif
-
-  //muerr = musaMalloc((void**) &d_work, sizeof(double) * d_lwork);
-  muerr = musaMalloc((void**) &d_work, d_lwork); // d_lwork already in bytes
-  if (muerr != musaSuccess) {
-    errormessage("Error in cusolver_Dtrtri d_work: %s\n",musaGetErrorString(muerr));
-  }
-#ifdef DEBUG_MUSA
-  printf("CUDA Malloc, cusolverDtrtri_elpa_wrapper, pointer address: %p, size: %d \n", (void*)d_work, d_lwork);
-#endif
-
-  //status = cusolverDnXtrtri(*((musolverDnHandle_t*)handle), fill_mode_new_api(uplo), diag_type_new_api(diag), n, CUDA_R_64F, A, lda, d_work, d_lwork, h_work, h_lwork, devInfo);
-  status = cusolverDnXtrtri(musaHandle, fill_mode_new_api(uplo), diag_type_new_api(diag), n, CUDA_R_64F, A, lda, d_work, d_lwork, h_work, h_lwork, devInfo);
+  musolverStatus_t status = musolverDnDtrtri(musaHandle, fill_mode_new_api(uplo), diag_type_new_api(diag), (int)n, A, (int)lda, devInfo);
 
   if (status != MUSOLVER_STATUS_SUCCESS)
     elpa_cusolverPrintError(status);
 
-  //muerr = musaDeviceSynchronize();
-  //if (muerr != musaSuccess) {
-  //  errormessage("Error in cusolver_Dtrtri: musaDeviceSynchronize: %s\n",musaGetErrorString(muerr));
-  //}
-
-  muerr = musaMemcpy(&info_gpu, devInfo, sizeof(int), musaMemcpyDeviceToHost);
+  muerr = musaMemcpy(&info_dev, devInfo, sizeof(int), musaMemcpyDeviceToHost);
   if (muerr != musaSuccess) {
-    errormessage("Error in cusolver_Dtrtri info_gpu: %s\n",musaGetErrorString(muerr));
+    errormessage("Error in musolver_Dtrtri info_gpu: %s\n",musaGetErrorString(muerr));
   }
-
-  *info = info_gpu;
-  muerr = musaFree(d_work);
-  if (muerr != musaSuccess) {
-    errormessage("Error in cusolver_Dtrtri cuda_free(d_work): %s\n",musaGetErrorString(muerr));
-  }
+  *info = info_dev;
 
   muerr = musaFree(devInfo);
   if (muerr != musaSuccess) {
-    errormessage("Error in cusolver_Dtrtri cuda_free(devInfo): %s\n",musaGetErrorString(muerr));
+    errormessage("Error in musolver_Dtrtri musaFree(devInfo): %s\n",musaGetErrorString(muerr));
   }
 }
 
 
 void cusolverStrtri_elpa_wrapper (musolverDnHandle_t musaHandle, char uplo, char diag, int64_t n, float *A, int64_t lda, int *info) {
-  musolverStatus_t status;
-
-  int info_gpu = 0;
-
-  int *devInfo = NULL; 
+  int info_dev = 0;
+  int *devInfo = NULL;
   musaError_t muerr = musaMalloc((void**)&devInfo, sizeof(int));
-#ifdef DEBUG_MUSA
-  printf("CUDA Malloc, cusolverStrtri_elpa_wrapper, pointer address: %p, size: %d \n", (void*)devInfo, sizeof(int));
-#endif
   if (muerr != musaSuccess) {
-    errormessage("Error in cusolver_Strtri devInfo: %s\n",musaGetErrorString(muerr));
+    errormessage("Error in musolver_Strtri devInfo: %s\n",musaGetErrorString(muerr));
   }
 
-  float *d_work = NULL, *h_work=NULL;
-  size_t d_lwork = 0;
-  size_t h_lwork = 0;
-
-  //status = cusolverDnXtrtri_bufferSize(*((musolverDnHandle_t*)handle), fill_mode_new_api(uplo), diag_type_new_api(diag), n, CUDA_R_32F, A, lda, &d_lwork, &h_lwork);
-  status = cusolverDnXtrtri_bufferSize(musaHandle, fill_mode_new_api(uplo), diag_type_new_api(diag), n, CUDA_R_32F, A, lda, &d_lwork, &h_lwork);
-  if (status != MUSOLVER_STATUS_SUCCESS) {
-    errormessage("Error in cusolverDnStrtri_buffer_size %s \n","aborting");
-  }
-
-  if (h_lwork != 0) {
-    errormessage("Error in cusolver_Strtri host work array needed of size=: %d\n",h_lwork);
-  }
-
-#if CUSOLVER_VERSION < 11601
-  d_lwork *= 4;
-#endif
-
-  //muerr = musaMalloc((void**) &d_work, sizeof(float) * d_lwork);
-  muerr = musaMalloc((void**) &d_work, d_lwork); // d_lwork already in bytes
-#ifdef DEBUG_MUSA
-  printf("CUDA Malloc, cusolverStrtri_elpa_wrapper, pointer address: %p, size: %d \n", (void*)d_work, d_lwork);
-#endif
-  if (muerr != musaSuccess) {
-    errormessage("Error in cusolver_Strtri d_work: %s\n",musaGetErrorString(muerr));
-  }
-
-  //status = cusolverDnXtrtri(*((musolverDnHandle_t*)handle), fill_mode_new_api(uplo), diag_type_new_api(diag), n, CUDA_R_32F, A, lda, d_work, d_lwork, h_work, h_lwork, devInfo);
-  status = cusolverDnXtrtri(musaHandle, fill_mode_new_api(uplo), diag_type_new_api(diag), n, CUDA_R_32F, A, lda, d_work, d_lwork, h_work, h_lwork, devInfo);
+  musolverStatus_t status = musolverDnStrtri(musaHandle, fill_mode_new_api(uplo), diag_type_new_api(diag), (int)n, A, (int)lda, devInfo);
 
   if (status != MUSOLVER_STATUS_SUCCESS)
     elpa_cusolverPrintError(status);
 
-  //muerr = musaDeviceSynchronize();
-  //if (muerr != musaSuccess) {
-  //  errormessage("Error in cusolver_Strtri: musaDeviceSynchronize: %s\n",musaGetErrorString(muerr));
-  //}
-
-  muerr = musaMemcpy(&info_gpu, devInfo, sizeof(int), musaMemcpyDeviceToHost);
+  muerr = musaMemcpy(&info_dev, devInfo, sizeof(int), musaMemcpyDeviceToHost);
   if (muerr != musaSuccess) {
-    errormessage("Error in cusolver_Strtri info_gpu: %s\n",musaGetErrorString(muerr));
+    errormessage("Error in musolver_Strtri info_gpu: %s\n",musaGetErrorString(muerr));
   }
-
-  *info = info_gpu;
-  muerr = musaFree(d_work);
-  if (muerr != musaSuccess) {
-    errormessage("Error in cusolver_Strtri cuda_free(d_work): %s\n",musaGetErrorString(muerr));
-  }
+  *info = info_dev;
 
   muerr = musaFree(devInfo);
   if (muerr != musaSuccess) {
-    errormessage("Error in cusolver_Strtri cuda_free(devInfo): %s\n",musaGetErrorString(muerr));
+    errormessage("Error in musolver_Strtri musaFree(devInfo): %s\n",musaGetErrorString(muerr));
   }
 }
 
 
 void cusolverZtrtri_elpa_wrapper (musolverDnHandle_t musaHandle, char uplo, char diag, int64_t n, double _Complex *A, int64_t lda, int *info) {
-  musolverStatus_t status;
-
-  int info_gpu = 0;
-
-  int *devInfo = NULL; 
+  int info_dev = 0;
+  int *devInfo = NULL;
   musaError_t muerr = musaMalloc((void**)&devInfo, sizeof(int));
-#ifdef DEBUG_MUSA
-  printf("CUDA Malloc, cusolverZtrtri_elpa_wrapper, pointer address: %p, size: %d \n", (void*)devInfo, sizeof(int));
-#endif
   if (muerr != musaSuccess) {
-    errormessage("Error in cusolver_Ztrtri devInfo: %s\n",musaGetErrorString(muerr));
+    errormessage("Error in musolver_Ztrtri devInfo: %s\n",musaGetErrorString(muerr));
   }
 
-  //muDoubleComplex A_casted = *((muDoubleComplex*)(A));
-  double _Complex *d_work = NULL, *h_work=NULL;
-  size_t d_lwork = 0;
-  size_t h_lwork = 0;
-
-  //status = cusolverDnXtrtri_bufferSize(*((musolverDnHandle_t*)handle), fill_mode_new_api(uplo), diag_type_new_api(diag), n, CUDA_C_64F, A, lda, &d_lwork, &h_lwork);
-  status = cusolverDnXtrtri_bufferSize(musaHandle, fill_mode_new_api(uplo), diag_type_new_api(diag), n, CUDA_C_64F, A, lda, &d_lwork, &h_lwork);
-  if (status != MUSOLVER_STATUS_SUCCESS) {
-    errormessage("Error in cusolverDnZtrtri_buffer_size %s \n","aborting");
-  }
-
-  if (h_lwork != 0) {
-    errormessage("Error in cusolver_Ztrtri host work array needed of size=: %d\n",h_lwork);
-  }
-
-#if CUSOLVER_VERSION < 11601
-  d_lwork *= 16;
-#endif
-
-  //muerr = musaMalloc((void**) &d_work, sizeof(double _Complex) * d_lwork);
-  muerr = musaMalloc((void**) &d_work, d_lwork); // d_lwork in bytes
-#ifdef DEBUG_MUSA
-  printf("CUDA Malloc, cusolverZtrtri_elpa_wrapper, pointer address: %p, size: %d \n", (void*)d_work, d_lwork);
-#endif
-  if (muerr != musaSuccess) {
-    errormessage("Error in cusolver_Ztrtri d_work: %s\n",musaGetErrorString(muerr));
-  }
-
-  //status = cusolverDnXtrtri(*((musolverDnHandle_t*)handle), fill_mode_new_api(uplo), diag_type_new_api(diag), n, CUDA_C_64F, A, lda, d_work, d_lwork, h_work, h_lwork, devInfo);
-  status = cusolverDnXtrtri(musaHandle, fill_mode_new_api(uplo), diag_type_new_api(diag), n, CUDA_C_64F, A, lda, d_work, d_lwork, h_work, h_lwork, devInfo);
+  muDoubleComplex* A_casted = (muDoubleComplex*) A;
+  musolverStatus_t status = musolverDnZtrtri(musaHandle, fill_mode_new_api(uplo), diag_type_new_api(diag), (int)n, A_casted, (int)lda, devInfo);
 
   if (status != MUSOLVER_STATUS_SUCCESS)
     elpa_cusolverPrintError(status);
 
-  //muerr = musaDeviceSynchronize();
-  //if (muerr != musaSuccess) {
-  //  errormessage("Error in cusolver_Ztrtri: musaDeviceSynchronize: %s\n",musaGetErrorString(muerr));
-  //}
-
-  muerr = musaMemcpy(&info_gpu, devInfo, sizeof(int), musaMemcpyDeviceToHost);
+  muerr = musaMemcpy(&info_dev, devInfo, sizeof(int), musaMemcpyDeviceToHost);
   if (muerr != musaSuccess) {
-    errormessage("Error in cusolver_Ztrtri info_gpu: %s\n",musaGetErrorString(muerr));
+    errormessage("Error in musolver_Ztrtri info_gpu: %s\n",musaGetErrorString(muerr));
   }
-
-  *info = info_gpu;
-  muerr = musaFree(d_work);
-  if (muerr != musaSuccess) {
-    errormessage("Error in cusolver_Ztrtri cuda_free(d_work): %s\n",musaGetErrorString(muerr));
-  }
+  *info = info_dev;
 
   muerr = musaFree(devInfo);
   if (muerr != musaSuccess) {
-    errormessage("Error in cusolver_Ztrtri cuda_free(devInfo): %s\n",musaGetErrorString(muerr));
+    errormessage("Error in musolver_Ztrtri musaFree(devInfo): %s\n",musaGetErrorString(muerr));
   }
 }
 
 
 void cusolverCtrtri_elpa_wrapper (musolverDnHandle_t musaHandle, char uplo, char diag, int64_t n, float _Complex *A, int64_t lda, int *info) {
-  musolverStatus_t status;
-
-  int info_gpu = 0;
-
-  int *devInfo = NULL; 
+  int info_dev = 0;
+  int *devInfo = NULL;
   musaError_t muerr = musaMalloc((void**)&devInfo, sizeof(int));
-#ifdef DEBUG_MUSA
-  printf("CUDA Malloc, cusolverCtrtri_elpa_wrapper, pointer address: %p, size: %d \n", (void*)devInfo, sizeof(int));
-#endif
   if (muerr != musaSuccess) {
-    errormessage("Error in cusolver_Ctrtri devInfo: %s\n",musaGetErrorString(muerr));
+    errormessage("Error in musolver_Ctrtri devInfo: %s\n",musaGetErrorString(muerr));
   }
 
-  //muFloatComplex A_casted = *((muFloatComplex*)(A));
-  float _Complex *d_work = NULL, *h_work=NULL;
-  size_t d_lwork = 0;
-  size_t h_lwork = 0;
-
-  //status = cusolverDnXtrtri_bufferSize(*((musolverDnHandle_t*)handle), fill_mode_new_api(uplo), diag_type_new_api(diag), n, CUDA_C_32F, A, lda, &d_lwork, &h_lwork);
-  status = cusolverDnXtrtri_bufferSize(musaHandle, fill_mode_new_api(uplo), diag_type_new_api(diag), n, CUDA_C_32F, A, lda, &d_lwork, &h_lwork);
-  if (status != MUSOLVER_STATUS_SUCCESS) {
-    errormessage("Error in cusolverDnCtrtri_buffer_size %s \n","aborting");
-  }
-
-  if (h_lwork != 0) {
-    errormessage("Error in cusolver_Ctrtri host work array needed of size=: %d\n",h_lwork);
-  }
-
-#if CUSOLVER_VERSION < 11601
-  d_lwork *= 8;
-#endif
-
-  //muerr = musaMalloc((void**) &d_work, sizeof(float _Complex) * d_lwork);
-  muerr = musaMalloc((void**) &d_work, d_lwork); // d_lwork already in bytes
-#ifdef DEBUG_MUSA
-  printf("CUDA Malloc, cusolverCtrtri_elpa_wrapper, pointer address: %p, size: %d \n", (void*)d_work, d_lwork);
-#endif
-  if (muerr != musaSuccess) {
-    errormessage("Error in cusolver_Ctrtri d_work: %s\n",musaGetErrorString(muerr));
-  }
-
-  //status = cusolverDnXtrtri(*((musolverDnHandle_t*)handle), fill_mode_new_api(uplo), diag_type_new_api(diag), n, CUDA_C_32F, A, lda, d_work, d_lwork, h_work, h_lwork, devInfo);
-  status = cusolverDnXtrtri(musaHandle, fill_mode_new_api(uplo), diag_type_new_api(diag), n, CUDA_C_32F, A, lda, d_work, d_lwork, h_work, h_lwork, devInfo);
+  muComplex* A_casted = (muComplex*) A;
+  musolverStatus_t status = musolverDnCtrtri(musaHandle, fill_mode_new_api(uplo), diag_type_new_api(diag), (int)n, A_casted, (int)lda, devInfo);
 
   if (status != MUSOLVER_STATUS_SUCCESS)
     elpa_cusolverPrintError(status);
 
-  //muerr = musaDeviceSynchronize();
-  //if (muerr != musaSuccess) {
-  //  errormessage("Error in cusolver_Ctrtri: musaDeviceSynchronize: %s\n",musaGetErrorString(muerr));
-  //}
-
-  muerr = musaMemcpy(&info_gpu, devInfo, sizeof(int), musaMemcpyDeviceToHost);
+  muerr = musaMemcpy(&info_dev, devInfo, sizeof(int), musaMemcpyDeviceToHost);
   if (muerr != musaSuccess) {
-    errormessage("Error in cusolver_Ctrtri info_gpu: %s\n",musaGetErrorString(muerr));
+    errormessage("Error in musolver_Ctrtri info_gpu: %s\n",musaGetErrorString(muerr));
   }
-
-  *info = info_gpu;
-  muerr = musaFree(d_work);
-  if (muerr != musaSuccess) {
-    errormessage("Error in cusolver_Ctrtri cuda_free(d_work): %s\n",musaGetErrorString(muerr));
-  }
+  *info = info_dev;
 
   muerr = musaFree(devInfo);
   if (muerr != musaSuccess) {
-    errormessage("Error in cusolver_Ctrtri cuda_free(devInfo): %s\n",musaGetErrorString(muerr));
+    errormessage("Error in musolver_Ctrtri musaFree(devInfo): %s\n",musaGetErrorString(muerr));
   }
 }
 
@@ -594,114 +417,137 @@ void cusolverCpotrf_elpa_wrapper (musolverDnHandle_t musaHandle, char uplo, int 
 
 
 //_________________________________________________________________________________________________
-// cusolverXpotrf
+// cusolverXpotrf — MUSA has no generic Xpotrf, dispatch by dataType
 
-// Introduced with CUDA 11.1 (CUDA_VERSION >= 11010)
-
-void cusolverXpotrf_bufferSize_elpa_wrapper(musolverDnHandle_t cusolverHandle, char uplo, int n, char dataType, intptr_t A, int lda, 
+void cusolverXpotrf_bufferSize_elpa_wrapper(musolverDnHandle_t cusolverHandle, char uplo, int n, char dataType, intptr_t A, int lda,
                                           size_t *workspaceInBytesOnDevice, size_t *workspaceInBytesOnHost){
-
   musolverStatus_t status;
-  cudaDataType cuda_data_type =  getCudaDataType(dataType);
+  int lwork = 0;
 
-  status = cusolverDnXpotrf_bufferSize(cusolverHandle, NULL, fill_mode_new_api(uplo), (int64_t) n, cuda_data_type, (void *) A, (int64_t) lda, 
-                                        cuda_data_type, workspaceInBytesOnDevice, workspaceInBytesOnHost);
+  if (dataType == 'D') {
+    status = musolverDnDpotrf_bufferSize(cusolverHandle, fill_mode_new_api(uplo), n, (double*)A, lda, &lwork);
+  } else if (dataType == 'S') {
+    status = musolverDnSpotrf_bufferSize(cusolverHandle, fill_mode_new_api(uplo), n, (float*)A, lda, &lwork);
+  } else if (dataType == 'Z') {
+    status = musolverDnZpotrf_bufferSize(cusolverHandle, fill_mode_new_api(uplo), n, (muDoubleComplex*)A, lda, &lwork);
+  } else if (dataType == 'C') {
+    status = musolverDnCpotrf_bufferSize(cusolverHandle, fill_mode_new_api(uplo), n, (muFloatComplex*)A, lda, &lwork);
+  } else {
+    errormessage("Error in cusolverXpotrf_bufferSize: unknown data type %s\n", "aborting");
+    return;
+  }
+
+  if (dataType == 'D')      *workspaceInBytesOnDevice = (size_t)lwork * sizeof(double);
+  else if (dataType == 'S') *workspaceInBytesOnDevice = (size_t)lwork * sizeof(float);
+  else if (dataType == 'Z') *workspaceInBytesOnDevice = (size_t)lwork * sizeof(muDoubleComplex);
+  else if (dataType == 'C') *workspaceInBytesOnDevice = (size_t)lwork * sizeof(muFloatComplex);
+  *workspaceInBytesOnHost = 0;
 
   if (status != MUSOLVER_STATUS_SUCCESS){
     elpa_cusolverPrintError(status);
-    errormessage("Error in cusolverDnXpotrf_bufferSize %s \n", "aborting");
+    errormessage("Error in musolverDnXpotrf_bufferSize %s \n", "aborting");
   }
 }
 
 
-void cusolverXpotrf_elpa_wrapper(musolverDnHandle_t cusolverHandle, char uplo, int n, char dataType, intptr_t A, int lda, 
-                                intptr_t buffer_dev , size_t *workspaceInBytesOnDevice, 
+void cusolverXpotrf_elpa_wrapper(musolverDnHandle_t cusolverHandle, char uplo, int n, char dataType, intptr_t A, int lda,
+                                intptr_t buffer_dev , size_t *workspaceInBytesOnDevice,
                                 intptr_t buffer_host, size_t *workspaceInBytesOnHost, int *info_dev){
-
   musolverStatus_t status;
-  cudaDataType cuda_data_type =  getCudaDataType(dataType);
+  int lwork;
 
-  status = cusolverDnXpotrf(cusolverHandle, NULL, fill_mode_new_api(uplo), (int64_t) n, cuda_data_type, (void *) A, (int64_t) lda, cuda_data_type,
-                            (void *) buffer_dev , *workspaceInBytesOnDevice,
-                            (void *) buffer_host, *workspaceInBytesOnHost, info_dev);
-  
+  if (dataType == 'D') {
+    lwork = (int)(*workspaceInBytesOnDevice / sizeof(double));
+    status = musolverDnDpotrf(cusolverHandle, fill_mode_new_api(uplo), n, (double*)A, lda, (double*)buffer_dev, lwork, info_dev);
+  } else if (dataType == 'S') {
+    lwork = (int)(*workspaceInBytesOnDevice / sizeof(float));
+    status = musolverDnSpotrf(cusolverHandle, fill_mode_new_api(uplo), n, (float*)A, lda, (float*)buffer_dev, lwork, info_dev);
+  } else if (dataType == 'Z') {
+    lwork = (int)(*workspaceInBytesOnDevice / sizeof(muDoubleComplex));
+    status = musolverDnZpotrf(cusolverHandle, fill_mode_new_api(uplo), n, (muDoubleComplex*)A, lda, (muDoubleComplex*)buffer_dev, lwork, info_dev);
+  } else if (dataType == 'C') {
+    lwork = (int)(*workspaceInBytesOnDevice / sizeof(muFloatComplex));
+    status = musolverDnCpotrf(cusolverHandle, fill_mode_new_api(uplo), n, (muFloatComplex*)A, lda, (muFloatComplex*)buffer_dev, lwork, info_dev);
+  } else {
+    errormessage("Error in cusolverXpotrf: unknown data type %s\n", "aborting");
+    return;
+  }
+
   if (status != MUSOLVER_STATUS_SUCCESS){
     elpa_cusolverPrintError(status);
-    errormessage("Error in cusolverDnXpotrf %s \n", "aborting");
+    errormessage("Error in musolverDnXpotrf %s \n", "aborting");
   }
 }
 
 
 //_________________________________________________________________________________________________
-// cusolverXsyevd
+// musolverXsyevd
 
 void cusolverDsyevd_elpa_wrapper (musolverDnHandle_t musaHandle, int n, double *A, int lda, double *eigenvalues, int *info_dev) {
   musolverStatus_t status;
   musaError_t muerr;
 
-  double *d_work = NULL;
-  int d_lwork = 0;
+  mublasEvect jobz = MUBLAS_EVECT_ORIGINAL;
+  mublasFillMode_t uplo = MUBLAS_FILL_MODE_LOWER;
 
-  cusolverEigMode_t jobz = CUSOLVER_EIG_MODE_VECTOR; // compute eigenvalues and eigenvectors.
-  cublasFillMode_t uplo = MUBLAS_FILL_MODE_LOWER;
-
-  status = cusolverDnDsyevd_bufferSize(musaHandle, jobz,  uplo, n, A, lda, eigenvalues, &d_lwork);
+  size_t bufferSize = 0;
+  status = musolverDnDsyevd_bufferSize(jobz, uplo, n, &bufferSize);
   if (status != MUSOLVER_STATUS_SUCCESS) {
-    errormessage("Error in cusolverDnSsyevd_buffer_size %s \n","aborting");
+    errormessage("Error in musolverDnDsyevd_bufferSize %s \n","aborting");
   }
 
-  muerr = musaMalloc((void**) &d_work, sizeof(double) * d_lwork);
+  void *d_work = NULL;
+  muerr = musaMalloc(&d_work, bufferSize);
   if (muerr != musaSuccess) {
     errormessage("Error in musaMalloc d_work: %s\n",musaGetErrorString(muerr));
   }
-#ifdef DEBUG_MUSA
-  printf("CUDA Malloc, cusolverDsyevd_elpa_wrapper, pointer address: %p, size: %d \n", (void*)d_work, sizeof(double)*d_lwork);
-#endif
 
-  NVTX_RANGE_PUSH("cusolverDnDsyevd");
-  status = cusolverDnDsyevd(musaHandle, jobz, uplo, n, A, lda, eigenvalues, d_work, d_lwork, info_dev);
-  NVTX_RANGE_POP("cusolverDnDsyevd");
+  double *E = NULL;
+  muerr = musaMalloc((void**)&E, sizeof(double) * (n > 1 ? n - 1 : 1));
+  if (muerr != musaSuccess) {
+    errormessage("Error in musaMalloc E: %s\n",musaGetErrorString(muerr));
+  }
+
+  status = musolverDnDsyevd(musaHandle, jobz, uplo, n, A, lda, eigenvalues, E, info_dev, d_work);
 
   if (status != MUSOLVER_STATUS_SUCCESS) elpa_cusolverPrintError(status);
 
-  muerr = musaFree(d_work);
-  if (muerr != musaSuccess) {
-    errormessage("Error in cusolverDnDsyevd cuda_free(d_work): %s\n",musaGetErrorString(muerr));
-  }
+  musaFree(E);
+  musaFree(d_work);
 }
 
 void cusolverSsyevd_elpa_wrapper (musolverDnHandle_t musaHandle, int n, float *A, int lda, float *eigenvalues, int *info_dev) {
   musolverStatus_t status;
   musaError_t muerr;
 
-  float *d_work = NULL;
-  int d_lwork = 0;
+  mublasEvect jobz = MUBLAS_EVECT_ORIGINAL;
+  mublasFillMode_t uplo = MUBLAS_FILL_MODE_LOWER;
 
-  cusolverEigMode_t jobz = CUSOLVER_EIG_MODE_VECTOR; // compute eigenvalues and eigenvectors.
-  cublasFillMode_t uplo = MUBLAS_FILL_MODE_LOWER;
-
-  status = cusolverDnSsyevd_bufferSize(musaHandle, jobz,  uplo, n, A, lda, eigenvalues, &d_lwork);
+  size_t bufferSize = 0;
+  status = musolverDnSsyevd_bufferSize(jobz, uplo, n, &bufferSize);
   if (status != MUSOLVER_STATUS_SUCCESS) {
-    errormessage("Error in cusolverDnSsyevd_buffer_size %s \n","aborting");
+    errormessage("Error in musolverDnSsyevd_bufferSize %s \n","aborting");
   }
 
-  muerr = musaMalloc((void**) &d_work, sizeof(float) * d_lwork);
+  void *d_work = NULL;
+  muerr = musaMalloc(&d_work, bufferSize);
   if (muerr != musaSuccess) {
     errormessage("Error in musaMalloc d_work: %s\n",musaGetErrorString(muerr));
   }
-#ifdef DEBUG_MUSA
-  printf("CUDA Malloc, cusolverSsyevd_elpa_wrapper, pointer address: %p, size: %d \n", (void*)d_work, sizeof(float)*d_lwork);
-#endif
 
-  status = cusolverDnSsyevd(musaHandle, jobz, uplo, n, A, lda, eigenvalues, d_work, d_lwork, info_dev);
+  float *E = NULL;
+  muerr = musaMalloc((void**)&E, sizeof(float) * (n > 1 ? n - 1 : 1));
+  if (muerr != musaSuccess) {
+    errormessage("Error in musaMalloc E: %s\n",musaGetErrorString(muerr));
+  }
+
+  status = musolverDnSsyevd(musaHandle, jobz, uplo, n, A, lda, eigenvalues, E, info_dev, d_work);
 
   if (status != MUSOLVER_STATUS_SUCCESS)
     elpa_cusolverPrintError(status);
 
-  muerr = musaFree(d_work);
-  if (muerr != musaSuccess) {
-    errormessage("Error in cusolver_DnSsyevd cuda_free(d_work): %s\n",musaGetErrorString(muerr));
-  }
+  musaFree(E);
+  musaFree(d_work);
 }
 
   
