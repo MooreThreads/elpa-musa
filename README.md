@@ -1,146 +1,57 @@
-# [Eigenvalue SoLvers for Petaflop-Applications (ELPA)](http://elpa.mpcdf.mpg.de)
+# elpa-musa
 
-## Current Release ##
+elpa-musa is maintained by Moore Threads as a MUSA adaptation of ELPA, a library for solving dense symmetric and Hermitian eigenvalue problems.
 
-The current release is ELPA 2026.02.001. The current supported API version
-is 202600202. This release supports the earliest API version 20170403.
-The current version for autotuning is also 202600202 and down to version 20170403 ist supported
-for autotuning. When the autotune version is set to a value **below** 20211125 the old autotuning
-implementation is used, and for 20211125 and higher the new implementation is used.
+## Source Lineage
 
-[![Build 
-status](https://gitlab.mpcdf.mpg.de/elpa/elpa/badges/master/build.svg)](https://gitlab.mpcdf.mpg.de/elpa/elpa/commits/master)
+- Upstream repository: https://gitlab.mpcdf.mpg.de/elpa/elpa
+- Inherited source version: v2026.02.001
+- Upstream baseline commit: `847ae2a8703ad6ada1cdb7640d66873eee3e430b`
+- MUSA migration ref: `origin/elpa-musa`
+- MUSA migration commit: `8b4e009c185dc7f051f81c5386f5014536725fb7`
 
-[![Code 
-coverage](https://gitlab.mpcdf.mpg.de/elpa/badges/master/coverage.svg)](https://elpa.pages.mpcdf.de/elpa/coverage_summary)
+## MUSA Adaptation
 
-![License LGPL v3][license-badge]
+- adds --enable-musa-gpu and --with-musa-path configure support
+- adds MUSA compiler and MUSA math-library detection in the Autotools configuration
+- retains inherited CPU, CUDA, HIP, OpenMP, MPI, test, and documentation source layout
 
-[license-badge]: https://img.shields.io/badge/License-LGPL%20v3-blue.svg
+The repository preserves the inherited upstream source structure unless a file is part of the MUSA adaptation. CUDA, CPU, Python, examples, tests, documentation, and third-party source material are retained so the published tree remains a complete source distribution.
 
+## Dependencies
 
-## About *ELPA* ##
+- Autoconf and Automake tooling
+- MPI compiler toolchain
+- Fortran and C compilers
+- MUSA SDK with mcc, muBLAS, and muSOLVER
 
-The computation of selected or all eigenvalues and eigenvectors of a symmetric
-(Hermitian) matrix has high relevance for various scientific disciplines.
-For the calculation of a significant part of the eigensystem typically direct
-eigensolvers are used. For large problems, the eigensystem calculations with
-existing solvers can become the computational bottleneck.
+Install project-specific dependencies according to the inherited build files and use a MUSA SDK environment when building MUSA targets.
 
-As a consequence, the *ELPA* project was initiated with the aim to develop and
-implement an efficient eigenvalue solver for petaflop applications, supported
-by the German Federal Government, through BMBF Grant 01IH08007, from
-Dec 2008 to Nov 2011.
+## Build
 
-The challenging task has been addressed through a multi-disciplinary consortium
-of partners with complementary skills in different areas.
+```bash
+./autogen.sh
+./configure --enable-musa-gpu --with-musa-path=/usr/local/musa
+make -j1
+```
 
-The *ELPA* library was originally created by the *ELPA* consortium,
-consisting of the following organizations:
+These commands describe the static source build entry points. This publication workflow did not run a build or runtime test.
 
-- Max Planck Computing and Data Facility (MPCDF), formerly known as
-  Rechenzentrum Garching der Max-Planck-Gesellschaft (RZG),
-- Bergische Universität Wuppertal, Lehrstuhl für angewandte
-  Informatik,
-- Technische Universität München, Lehrstuhl für Informatik mit
-  Schwerpunkt Wissenschaftliches Rechnen ,
-- Fritz-Haber-Institut, Berlin, Abt. Theorie,
-- Max-Plack-Institut für Mathematik in den Naturwissenschaften,
-  Leipzig, Abt. Komplexe Strukutren in Biologie und Kognition,
-  and
-- IBM Deutschland GmbH
+## Basic Usage
 
-*ELPA* is distributed under the terms of version 3 of the license of the
-GNU Lesser General Public License as published by the Free Software Foundation.
+- link ELPA through the generated library and pkg-config metadata
+- enable MUSA GPU support during configure for Moore Threads GPU builds
 
-## Obtaining *ELPA*
+## Repository Layout
 
-There exist several ways to obtain the *ELPA* library either as sources or pre-compiled packages:
+- src and elpa: inherited ELPA library source
+- m4 and configure.ac: MUSA-aware Autotools configuration
+- test: inherited test programs
 
-- official release tar-gz sources from the *ELPA* [webpage](https://elpa.mpcdf.mpg.de/software/tarball-archive/ELPA_TARBALL_ARCHIVE.html)
-- from the *ELPA* [git repository](https://gitlab.mpcdf.mpg.de/elpa/elpa)
-- as packaged software for several Linux distributions (e.g. Debian, Fedora, OpenSuse)
+## Contributing
 
-## Terms of usage
+Contributions should keep MUSA-specific changes clearly scoped, preserve upstream attribution, and avoid removing inherited platform support unless a change is explicitly agreed for this fork.
 
-Your are free to obtain and use the *ELPA* library, as long as you respect the terms
-of version 3 of the license of the GNU Lesser General Public License.
+## Attribution and License
 
-No other conditions have to be met.
-
-Nonetheless, we are grateful if you cite the following publications:
-
-  If you use ELPA in general:
-
-  T. Auckenthaler, V. Blum, H.-J. Bungartz, T. Huckle, R. Johanni,
-  L. Krämer, B. Lang, H. Lederer, and P. R. Willems,
-  "Parallel solution of partial symmetric eigenvalue problems from
-  electronic structure calculations",
-  Parallel Computing 37, 783-794 (2011).
-  doi:10.1016/j.parco.2011.05.002.
-
-  Marek, A.; Blum, V.; Johanni, R.; Havu, V.; Lang, B.; Auckenthaler,
-  T.; Heinecke, A.; Bungartz, H.-J.; Lederer, H.
-  "The ELPA library: scalable parallel eigenvalue solutions for electronic
-  structure theory and computational science",
-  Journal of Physics Condensed Matter, 26, 213201 (2014)
-  doi:10.1088/0953-8984/26/21/213201
-  
-  If you use the GPU version of ELPA:
-
-  Kus, P; Marek, A.; Lederer, H.
-  "GPU Optimization of Large-Scale Eigenvalue Solver",
-  In: Radu F., Kumar K., Berre I., Nordbotten J., Pop I. (eds) 
-  Numerical Mathematics and Advanced Applications ENUMATH 2017. ENUMATH 2017. 
-  Lecture Notes in Computational Science and Engineering, vol 126. Springer, Cham
-  
-  Yu, V.; Moussa, J.; Kus, P.; Marek, A.; Messmer, P.; Yoon, M.; Lederer, H.; Blum, V.
-  "GPU-Acceleration of the ELPA2 Distributed Eigensolver for Dense Symmetric and Hermitian Eigenproblems",
-  Computer Physics Communications, 262, 107808 (2021)
-  doi:10.1016/j.cpc.2020.107808
-
-  If you use the new API and/or autotuning:
- 
-  Kus, P.; Marek, A.; Koecher, S. S.; Kowalski H.-H.; Carbogno, Ch.; Scheurer, Ch.; Reuter, K.; Scheffler, M.; Lederer, H.
-  "Optimizations of the Eigenvaluesolvers in the ELPA Library",
-  Parallel Computing 85, 167-177 (2019)
-
-  If you use the new support for skew-symmetric matrices:
-
-  Penke C.; Marek, A.; Vorwerk, C.; Draxl, C.; Benner, P.;
-  "High Performance Solution of Skew-symmetric Eigenvalue Problems with Applications in Solving the Bethe-Salpeter Eigenvalue Problem",
-  Parallel Computing 96, 102639 (2020)
-  doi:10.1016/j.parco.2020.102639
-
-## Installation of the *ELPA* library
-
-*ELPA* is shipped with a standard autotools automake installation infrastructure.
-Some other libraries are needed to install *ELPA* (the details depend on how you
-configure *ELPA*):
-
-  - Basic Linear Algebra Subroutines (BLAS)
-  - Lapack routines
-  - Basic Linear Algebra Communication Subroutines (BLACS)
-  - Scalapack routines
-  - a working MPI library
-
-Please refer to the [INSTALL document](./documentation/INSTALL.md) on details of the installation process and
-the possible configure options.
-
-## Using *ELPA*
-
-Since July 2024 we provide a complete [User Guide](https://elpa.mpcdf.mpg.de/userguide/elpa_userguide.pdf) that contains full information about installation, usage, best practices, and troubleshooting of ELPA.
-
-For the older version, please have a look at the [USERS_GUIDE](./documentation/USERS_GUIDE.md) file and the [PERFORMANCE tuning](./documentation/PERFORMANCE_TUNING.md) document.
-
-We also provide [doxygen online documentation](https://elpa.mpcdf.mpg.de/documentation/doxygen/ELPA_DOXYGEN_PAGES/ELPA-2026.02.001/html/index.html), where you can find the definition of the interfaces.
-
-## Contributing to *ELPA*
-
-It has been, and is, a tremendous effort to develop and maintain the
-*ELPA* library. A lot of things can still be done, but our man-power is limited.
-
-Thus every effort and help to improve the *ELPA* library is highly appreciated.
-For details please see the [CONTRIBUTING](CONTRIBUTING.md) document.
-
-
+This project is derived from ELPA at the source version and baseline listed above. Upstream copyright and notice material is retained in the source tree. See [LICENSE](LICENSE) for the Moore Threads license declaration for this MUSA adaptation and the inherited source license terms.
