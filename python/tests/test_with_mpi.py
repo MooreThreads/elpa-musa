@@ -1,5 +1,6 @@
 import pytest
 
+
 # combinations of na, nev, nblk to run all the tests with
 parameter_list = [
     (200, 20, 16),
